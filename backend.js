@@ -30,10 +30,10 @@ io.on('connection', (socket) => {
 
   socket.on('initCanvas', () => {});
 
-  socket.on('initGame', ({ width, height, devicePixelRation, username }) => {
+  socket.on('initGame', ({ width, height, username }) => {
     backEndPlayers[socket.id] = {
-      x: 500 * Math.random(),
-      y: 500 * Math.random(),
+      x: width * Math.random(),
+      y: height * Math.random(),
       color: `hsl(${360 * Math.random()}, 100%, 50%)`,
       sequenceNumber: 0,
       score: 0,
@@ -46,9 +46,9 @@ io.on('connection', (socket) => {
     };
     backEndPlayers[socket.id].radius = RADIUS;
 
-    if (devicePixelRation > 1) {
-      backEndPlayers[socket.id].radius = 2 * RADIUS;
-    }
+    // if (devicePixelRation > 1) {  // using scale
+    //   backEndPlayers[socket.id].radius = 2 * RADIUS;
+    // }
   });
 
   socket.on('disconnect', (reason) => {
@@ -74,7 +74,9 @@ io.on('connection', (socket) => {
   });
 
   socket.on('keydown', ({ keycode, sequenceNumber }) => {
-    backEndPlayers[socket.id].sequenceNumber = sequenceNumber;
+    const backendPlayer = backEndPlayers[socket.id];
+    if (!backEndPlayers[socket.id]) return;
+
     switch (keycode) {
       case 'KeyW':
         backEndPlayers[socket.id].y -= SPEED;
@@ -91,6 +93,24 @@ io.on('connection', (socket) => {
         backEndPlayers[socket.id].x += SPEED;
 
         break;
+    }
+    const playerSides = {
+      left: backendPlayer.x - backendPlayer.radius,
+      right: backendPlayer.x + backendPlayer.radius,
+      top: backendPlayer.y - backendPlayer.radius,
+      bottom: backendPlayer.y + backendPlayer.radius
+    };
+    if (playerSides.left < 0) {
+      backendPlayer.x = backendPlayer.radius;
+    }
+    if (playerSides.right > 1024) {
+      backendPlayer.x = 1024 - backendPlayer.radius;
+    }
+    if (playerSides.top < 0) {
+      backendPlayer.y = backendPlayer.radius;
+    }
+    if (playerSides.bottom > 576) {
+      backendPlayer.y = 576 - backendPlayer.radius;
     }
   });
 });
