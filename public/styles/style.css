@@ -1,0 +1,26 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+#myCanvas {
+  background: black;
+  position: absolute;
+  top: 0;
+  left: 0;
+  
+}
+
+h1  {
+  color:  white;
+  font-size: 120px;
+  position: absolute;
+  font-family: Impact, cursive;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-top: 10px solid white;
+  
+}
