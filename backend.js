@@ -14,7 +14,7 @@ const port = 3000;
 app.use(express.static('public'));
 
 app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/index.html');
+  res.sendFile(join(__dirname, 'public', 'index.html'));
 });
 
 const backEndPlayers = {};
@@ -23,7 +23,7 @@ const backEndProjectiles = {};
 const SPEED = 5;
 let projectileId = 0;
 const RADIUS = 10;
-PROJECTILE_RADIUS = 5;
+const PROJECTILE_RADIUS = 5;
 
 io.on('connection', (socket) => {
   io.emit('updatePlayers', backEndPlayers);
