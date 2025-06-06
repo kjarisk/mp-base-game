@@ -9,7 +9,7 @@ const app = express();
 const server = createServer(app);
 const io = new Server(server, { pingInterval: 2000, pingTimeout: 5000 });
 
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 app.use(express.static('public'));
 
@@ -160,7 +160,7 @@ setInterval(() => {
 }, 15);
 
 server.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
+  console.log(`Server running on port ${port}`);
 });
 
 console.log('server load');
