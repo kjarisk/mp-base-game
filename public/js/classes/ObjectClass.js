@@ -76,7 +76,7 @@ class Effect {
     this.gradient = gradient;
     this.width = this.canvas.width;
     this.height = this.canvas.height;
-    this.debug = true;
+    this.debug = false;
     this.element = document.getElementById('caption').getBoundingClientRect();
     this.particles = [];
     this.numberOfParticles = 600;

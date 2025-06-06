@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+      }
+
+      #myCanvas {
+        background: black;
+        position: absolute;
+        top: 0;
+        left: 0;
+      }
+
+      h1 {
+        color: white;
+        font-size: 120px;
+        position: absolute;
+        font-family: Impact, cursive;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        border-top: 10px solid white;
+      }
+    </style>
+    <title>Welcom</title>
+  </head>
+  <body>
+    <canvas id="myCanvas"></canvas>
+    <h1 id="caption">Welcome</h1>
+    <script src="./js/classes/ObjectClass.js"></script>
+    <script src="./js/main.js"></script>
+    <script src="./js/utils.js"></script>
+  </body>
+</html>
