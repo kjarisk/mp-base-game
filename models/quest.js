@@ -1,6 +1,6 @@
 const quests = [
   { id: 'practice', description: 'Play a game', goal: 1 },
-  { id: 'shooter', description: 'Shoot 10 projectiles', goal: 10 },
+  { id: 'horn', description: 'Honk your horn 5 times', goal: 5 },
   { id: 'winner', description: 'Reach 5 points', goal: 5 }
 ];
 
