@@ -8,6 +8,9 @@ const { Server } = require('socket.io');
 
 // simple JSON persistence for players
 const db = require('./db');
+
+// load existing player data before setting up routes or sockets
+db.loadPlayers();
 const authRoutes = require('./routes/auth');
 const questRoutes = require('./routes/quests');
 
