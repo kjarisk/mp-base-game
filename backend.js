@@ -1,4 +1,5 @@
 const express = require('express');
+const session = require('express-session');
 const { createServer } = require('node:http');
 const { join } = require('node:path');
 
@@ -7,6 +8,7 @@ const { Server } = require('socket.io');
 
 // simple JSON persistence for players
 const db = require('./db');
+const authRoutes = require('./routes/auth');
 
 const app = express();
 const server = createServer(app);
@@ -14,7 +16,18 @@ const io = new Server(server, { pingInterval: 2000, pingTimeout: 5000 });
 
 const port = process.env.PORT || 3000;
 
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(
+  session({
+    secret: 'keyboard cat',
+    resave: false,
+    saveUninitialized: false
+  })
+);
+
 app.use(express.static('public'));
+app.use(authRoutes);
 
 app.get('/', (req, res) => {
   res.sendFile(join(__dirname, 'public', 'index.html'));
