@@ -104,7 +104,7 @@ socket.on('updatePlayers', (backendPlayers) => {
       divToDelete.remove();
       delete frontEndPlayers[id];
       if (id === socket.id) {
-        document.querySelector('#usernameForm').style.display = 'block';
+        // player left the game
       }
     }
   }
@@ -246,16 +246,19 @@ window.addEventListener('keyup', (e) => {
   }
 });
 
-document.querySelector('#usernameForm').addEventListener('submit', (e) => {
-  e.preventDefault();
-  const text = document.querySelector('#usernameInput').value;
-  document.querySelector('#usernameForm').style.display = 'none';
-  socket.emit('initGame', {
-    username: text,
-    width: canvas.width,
-    height: canvas.height,
-    gameId,
-    create: createGame,
-    gameName
+fetch('/me')
+  .then((res) => res.ok ? res.json() : null)
+  .then((data) => {
+    if (!data) {
+      window.location.href = '/';
+      return;
+    }
+    socket.emit('initGame', {
+      username: data.username,
+      width: canvas.width,
+      height: canvas.height,
+      gameId,
+      create: createGame,
+      gameName
+    });
   });
-});

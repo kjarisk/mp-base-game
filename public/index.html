@@ -3,67 +3,22 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <style>
-      * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-        overflow: hidden;
-      }
-
-      #myCanvas {
-        background: black;
-        position: absolute;
-        top: 0;
-        left: 0;
-      }
-
-      #lobby {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background: rgba(0, 0, 0, 0.7);
-        padding: 20px;
-        color: white;
-        font-family: 'Comic Sans MS', cursive;
-        width: 300px;
-      }
-
-      #gamesList div {
-        margin-bottom: 8px;
-        display: flex;
-        justify-content: space-between;
-      }
-
-      button {
-        font-family: 'Comic Sans MS', cursive;
-        cursor: pointer;
-      }
-    </style>
-    <title>Welcom</title>
+    <title>Login</title>
+    <link rel="stylesheet" href="./styles/style.css" />
   </head>
   <body>
-    <canvas id="myCanvas"></canvas>
-    <h1 id="caption" style="display:none">MP Game</h1>
     <div id="lobby">
-      <div id="gamesList"></div>
-      <div id="questsList" style="margin-top:10px;"></div>
-      <form id="createGameForm" style="margin-top: 10px;">
-        <input
-          id="gameNameInput"
-          type="text"
-          placeholder="Game name"
-          style="width: 100%; padding: 4px; margin-bottom: 4px;"
-        />
-        <button type="submit" style="width: 100%;">Create Game</button>
+      <form id="loginForm">
+        <input name="username" type="text" placeholder="Username" style="width:100%; margin-bottom:4px; padding:4px" />
+        <input name="password" type="password" placeholder="Password" style="width:100%; margin-bottom:4px; padding:4px" />
+        <button type="submit" style="width:100%">Login</button>
       </form>
+      <form id="guestForm" style="margin-top:10px;">
+        <input id="guestname" type="text" placeholder="Play as guest" style="width:100%; margin-bottom:4px; padding:4px" />
+        <button type="submit" style="width:100%">Continue</button>
+      </form>
+      <a href="/register.html" style="color:white">Register</a>
     </div>
-    <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
-    <script src="./js/classes/ObjectClass.js"></script>
-    <script src="./js/main.js"></script>
-    <script src="./js/utils.js"></script>
-    <script src="./js/lobby.js"></script>
-    <script src="./js/quests.js"></script>
+    <script src="./js/login.js"></script>
   </body>
 </html>
