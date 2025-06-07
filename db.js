@@ -53,11 +53,16 @@ function updateQuestState(username, questState) {
   }
 }
 
+function getQuestState(username) {
+  return players[username]?.questState || {};
+}
+
 module.exports = {
   loadPlayers,
   savePlayers,
   getPlayer,
   createPlayer,
   updateScore,
-  updateQuestState
+  updateQuestState,
+  getQuestState
 };

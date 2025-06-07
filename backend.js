@@ -9,6 +9,7 @@ const { Server } = require('socket.io');
 // simple JSON persistence for players
 const db = require('./db');
 const authRoutes = require('./routes/auth');
+const questRoutes = require('./routes/quests');
 
 const app = express();
 const server = createServer(app);
@@ -28,6 +29,7 @@ app.use(
 
 app.use(express.static('public'));
 app.use(authRoutes);
+app.use(questRoutes);
 
 app.get('/', (req, res) => {
   res.sendFile(join(__dirname, 'public', 'index.html'));
