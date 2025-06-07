@@ -11,6 +11,10 @@ npm start
 
 Visit `http://localhost:3000` and log in or choose a guest name. After that you can create or join games in real time and each game runs in its own Socket.IO room.
 
+## Environment Variables
+
+Set the `SESSION_SECRET` variable to a strong value in production. This secret is used to sign session cookies. If not defined, the server falls back to a development default.
+
 ## Tests
 
 Run the automated tests with:
