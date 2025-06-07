@@ -18,3 +18,10 @@ Run the automated tests with:
 ```bash
 npm test
 ```
+
+## Deployment Notes
+
+Player data is stored in `players.json`, which the server updates at runtime. The
+file is generated automatically and is no longer tracked in git. Deployment
+workflows reset local changes before pulling from `main` so that modified files
+like `package-lock.json` do not cause merge conflicts.
