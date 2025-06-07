@@ -5,6 +5,9 @@ const { join } = require('node:path');
 // socket io
 const { Server } = require('socket.io');
 
+// simple JSON persistence for players
+const db = require('./db');
+
 const app = express();
 const server = createServer(app);
 const io = new Server(server, { pingInterval: 2000, pingTimeout: 5000 });
@@ -24,6 +27,9 @@ const SPEED = 5;
 let projectileId = 0;
 const RADIUS = 10;
 const PROJECTILE_RADIUS = 5;
+
+// load persisted players into memory
+const players = db.loadPlayers();
 
 function broadcastGames() {
   const list = Object.keys(games).map((id) => ({
@@ -47,8 +53,12 @@ io.on('connection', (socket) => {
 
     if (!games[gameId]) return;
 
+    // ensure player is registered in persistence layer
+    db.createPlayer(username);
+
     socket.join(gameId);
     socket.data.gameId = gameId;
+    socket.data.username = username;
 
     games[gameId].players[socket.id] = {
       x: width * Math.random(),
@@ -95,6 +105,13 @@ io.on('connection', (socket) => {
       velocity,
       playerId: socket.id
     };
+  });
+
+  // update quest state when players complete quests
+  socket.on('questComplete', (questState) => {
+    if (socket.data.username) {
+      db.updateQuestState(socket.data.username, questState);
+    }
   });
 
   socket.on('keydown', ({ keycode, sequenceNumber }) => {
@@ -172,7 +189,10 @@ setInterval(() => {
           game.projectiles[id].playerId !== playerId
         ) {
           if (game.players[game.projectiles[id].playerId]) {
-            game.players[game.projectiles[id].playerId].score++;
+            const shooter = game.players[game.projectiles[id].playerId];
+            shooter.score++;
+            // persist high score if new record
+            db.updateScore(shooter.username, shooter.score);
           }
 
           delete game.projectiles[id];
