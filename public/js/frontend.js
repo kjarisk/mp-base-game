@@ -7,8 +7,6 @@ const gameId = params.get('gameId');
 const createGame = params.get('create') === '1';
 const gameName = params.get('name');
 
-const scoreEl = document.querySelector('#scoreEl');
-
 const devicePixelRation = window.devicePixelRatio || 1;
 
 canvas.width = 1024 * devicePixelRation;
