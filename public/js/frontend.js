@@ -35,17 +35,16 @@ socket.on('updatePlayers', (backendPlayers) => {
         color: backendPlayer.color,
         username: backendPlayer.username
       });
-      document.querySelector(
-        '#playerLabels'
-      ).innerHTML += `<div data-id="${id}" data-score="${backendPlayer.score}">${backendPlayer.username} : ${backendPlayer.score}</div>`;
+      const label = document.createElement('div');
+      label.dataset.id = id;
+      label.dataset.score = backendPlayer.score;
+      label.textContent = `${backendPlayer.username} : ${backendPlayer.score}`;
+      document.querySelector('#playerLabels').appendChild(label);
     } else {
       // Player exist
-      document.querySelector(
-        `div[data-id="${id}"]`
-      ).innerHTML = `${backendPlayer.username} : ${backendPlayer.score}`;
-      document
-        .querySelector(`div[data-id="${id}"]`)
-        .setAttribute('data-score', backendPlayer.score);
+      const label = document.querySelector(`div[data-id="${id}"]`);
+      label.dataset.score = backendPlayer.score;
+      label.textContent = `${backendPlayer.username} : ${backendPlayer.score}`;
 
       const parentDiv = document.querySelector('#playerLabels');
       const childDivs = Array.from(parentDiv.querySelectorAll('div'));
