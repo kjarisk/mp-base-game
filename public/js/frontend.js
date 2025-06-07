@@ -2,6 +2,10 @@ const canvas = document.querySelector('canvas');
 const c = canvas.getContext('2d');
 
 const socket = io();
+const params = new URLSearchParams(window.location.search);
+const gameId = params.get('gameId');
+const createGame = params.get('create') === '1';
+const gameName = params.get('name');
 
 const scoreEl = document.querySelector('#scoreEl');
 
@@ -250,6 +254,9 @@ document.querySelector('#usernameForm').addEventListener('submit', (e) => {
   socket.emit('initGame', {
     username: text,
     width: canvas.width,
-    height: canvas.height
+    height: canvas.height,
+    gameId,
+    create: createGame,
+    gameName
   });
 });

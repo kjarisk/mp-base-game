@@ -17,47 +17,71 @@ app.get('/', (req, res) => {
   res.sendFile(join(__dirname, 'public', 'index.html'));
 });
 
-const backEndPlayers = {};
-const backEndProjectiles = {};
+// structure to hold game rooms
+const games = {};
 
 const SPEED = 5;
 let projectileId = 0;
 const RADIUS = 10;
 const PROJECTILE_RADIUS = 5;
 
+function broadcastGames() {
+  const list = Object.keys(games).map((id) => ({
+    id,
+    name: games[id].name,
+    players: Object.keys(games[id].players).length
+  }));
+  io.emit('gamesList', list);
+}
+
 io.on('connection', (socket) => {
-  io.emit('updatePlayers', backEndPlayers);
+  // send current games when a client connects
+  broadcastGames();
 
   socket.on('initCanvas', () => {});
 
-  socket.on('initGame', ({ width, height, username }) => {
-    backEndPlayers[socket.id] = {
+  socket.on('initGame', ({ width, height, username, gameId, create, gameName }) => {
+    if (create && !games[gameId]) {
+      games[gameId] = { name: gameName || 'Unnamed game', players: {}, projectiles: {} };
+    }
+
+    if (!games[gameId]) return;
+
+    socket.join(gameId);
+    socket.data.gameId = gameId;
+
+    games[gameId].players[socket.id] = {
       x: width * Math.random(),
       y: height * Math.random(),
       color: `hsl(${360 * Math.random()}, 100%, 50%)`,
       sequenceNumber: 0,
       score: 0,
-      username
+      username,
+      canvas: {
+        width,
+        height
+      },
+      radius: RADIUS
     };
 
-    backEndPlayers[socket.id].canvas = {
-      width,
-      height
-    };
-    backEndPlayers[socket.id].radius = RADIUS;
-
-    // if (devicePixelRation > 1) {  // using scale
-    //   backEndPlayers[socket.id].radius = 2 * RADIUS;
-    // }
+    broadcastGames();
   });
 
   socket.on('disconnect', (reason) => {
-    console.log(reason);
-    delete backEndPlayers[socket.id];
-    io.emit('updatePlayers', backEndPlayers);
+    const gameId = socket.data.gameId;
+    if (gameId && games[gameId]) {
+      delete games[gameId].players[socket.id];
+      if (Object.keys(games[gameId].players).length === 0) {
+        delete games[gameId];
+      }
+      broadcastGames();
+    }
   });
 
   socket.on('shoot', ({ x, y, angle }) => {
+    const gameId = socket.data.gameId;
+    if (!games[gameId]) return;
+
     projectileId++;
 
     const velocity = {
@@ -65,7 +89,7 @@ io.on('connection', (socket) => {
       y: Math.sin(angle) * 5
     };
 
-    backEndProjectiles[projectileId] = {
+    games[gameId].projectiles[projectileId] = {
       x,
       y,
       velocity,
@@ -74,26 +98,25 @@ io.on('connection', (socket) => {
   });
 
   socket.on('keydown', ({ keycode, sequenceNumber }) => {
-    const backendPlayer = backEndPlayers[socket.id];
-    if (!backEndPlayers[socket.id]) return;
+    const gameId = socket.data.gameId;
+    const backendPlayer = games[gameId]?.players[socket.id];
+    if (!backendPlayer) return;
 
     switch (keycode) {
       case 'KeyW':
-        backEndPlayers[socket.id].y -= SPEED;
+        backendPlayer.y -= SPEED;
         break;
       case 'KeyA':
-        backEndPlayers[socket.id].x -= SPEED;
-
+        backendPlayer.x -= SPEED;
         break;
       case 'KeyS':
-        backEndPlayers[socket.id].y += SPEED;
-
+        backendPlayer.y += SPEED;
         break;
       case 'KeyD':
-        backEndPlayers[socket.id].x += SPEED;
-
+        backendPlayer.x += SPEED;
         break;
     }
+
     const playerSides = {
       left: backendPlayer.x - backendPlayer.radius,
       right: backendPlayer.x + backendPlayer.radius,
@@ -117,46 +140,51 @@ io.on('connection', (socket) => {
 
 // backend ticker
 setInterval(() => {
-  // update projectile
-  for (const id in backEndProjectiles) {
-    backEndProjectiles[id].x += backEndProjectiles[id].velocity.x;
-    backEndProjectiles[id].y += backEndProjectiles[id].velocity.y;
+  for (const gameId in games) {
+    const game = games[gameId];
 
-    if (
-      backEndProjectiles[id].x - 5 >=
-        backEndPlayers[backEndProjectiles[id].playerId]?.canvas?.width ||
-      backEndProjectiles[id].x + 5 <= 0 ||
-      backEndProjectiles[id].y - 5 >=
-        backEndPlayers[backEndProjectiles[id].playerId]?.canvas?.height ||
-      backEndProjectiles[id].y + 5 <= 0
-    ) {
-      delete backEndProjectiles[id];
-      continue;
-    }
-    for (const playerId in backEndPlayers) {
-      const backendPlayer = backEndPlayers[playerId];
-      const DISTANCE = Math.hypot(
-        backEndProjectiles[id].x - backendPlayer.x,
-        backEndProjectiles[id].y - backendPlayer.y
-      );
-      // collision detection
+    for (const id in game.projectiles) {
+      game.projectiles[id].x += game.projectiles[id].velocity.x;
+      game.projectiles[id].y += game.projectiles[id].velocity.y;
+
+      const playerCanvas =
+        game.players[game.projectiles[id].playerId]?.canvas || {};
+
       if (
-        DISTANCE < PROJECTILE_RADIUS + backendPlayer.radius &&
-        backEndProjectiles[id].playerId !== playerId
+        game.projectiles[id].x - 5 >= playerCanvas.width ||
+        game.projectiles[id].x + 5 <= 0 ||
+        game.projectiles[id].y - 5 >= playerCanvas.height ||
+        game.projectiles[id].y + 5 <= 0
       ) {
-        if (backEndPlayers[backEndProjectiles[id].playerId]) {
-          backEndPlayers[backEndProjectiles[id].playerId].score++;
-        }
+        delete game.projectiles[id];
+        continue;
+      }
 
-        delete backEndProjectiles[id];
-        delete backEndPlayers[playerId];
-        break;
+      for (const playerId in game.players) {
+        const backendPlayer = game.players[playerId];
+        const DISTANCE = Math.hypot(
+          game.projectiles[id].x - backendPlayer.x,
+          game.projectiles[id].y - backendPlayer.y
+        );
+
+        if (
+          DISTANCE < PROJECTILE_RADIUS + backendPlayer.radius &&
+          game.projectiles[id].playerId !== playerId
+        ) {
+          if (game.players[game.projectiles[id].playerId]) {
+            game.players[game.projectiles[id].playerId].score++;
+          }
+
+          delete game.projectiles[id];
+          delete game.players[playerId];
+          break;
+        }
       }
     }
-  }
 
-  io.emit('updateProjectiles', backEndProjectiles);
-  io.emit('updatePlayers', backEndPlayers);
+    io.to(gameId).emit('updateProjectiles', game.projectiles);
+    io.to(gameId).emit('updatePlayers', game.players);
+  }
 }, 15);
 
 server.listen(port, () => {
