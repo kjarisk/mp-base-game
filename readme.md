@@ -2,11 +2,19 @@ Base for a multiplayer game
 
 ## Usage
 
-Run the backend server with:
+Install dependencies and start the backend server:
 
 ```bash
-node backend.js
+npm install
+npm start
 ```
 
-Visit `http://localhost:3000` to see the lobby. You can create or join games in
-real time and each game runs in its own Socket.IO room.
+Visit `http://localhost:3000` to see the lobby. You can create or join games in real time and each game runs in its own Socket.IO room.
+
+## Tests
+
+Run the automated tests with:
+
+```bash
+npm test
+```
