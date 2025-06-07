@@ -23,5 +23,6 @@ jobs:
           ssh ${{ secrets.LINODE_USER }}@${{ secrets.LINODE_HOST }} << 'EOF'
             cd ${{ secrets.PROD_PATH }}
             git pull origin main
+            npm ci
             pm2 restart multiplayer-game
           EOF
