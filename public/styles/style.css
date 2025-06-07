@@ -1,8 +1,59 @@
+:root {
+  --bg-dark: #1e2a38;
+  --bg-light: #283d54;
+  --accent: #ff6600;
+  --text-light: #ffffff;
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  overflow: hidden;
+}
+
+body {
+  min-height: 100vh;
+  background: var(--bg-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: Arial, sans-serif;
+  color: var(--text-light);
+}
+
+.auth-container {
+  background: rgba(0, 0, 0, 0.65);
+  padding: 20px;
+  border-radius: 8px;
+  width: 320px;
+}
+
+.auth-container h2 {
+  text-align: center;
+  margin-bottom: 12px;
+  color: var(--accent);
+}
+
+.auth-container form {
+  margin-bottom: 12px;
+}
+
+.auth-container input {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 8px;
+  border-radius: 4px;
+  border: none;
+}
+
+.auth-container button {
+  width: 100%;
+  padding: 8px;
+  border: none;
+  border-radius: 4px;
+  background: var(--accent);
+  color: var(--text-light);
+  cursor: pointer;
 }
 
 #myCanvas {
@@ -10,17 +61,15 @@
   position: absolute;
   top: 0;
   left: 0;
-  
 }
 
-h1  {
-  color:  white;
+h1 {
+  color: var(--text-light);
   font-size: 120px;
   position: absolute;
   font-family: Impact, cursive;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  border-top: 10px solid white;
-  
+  border-top: 10px solid var(--text-light);
 }

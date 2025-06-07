@@ -33,3 +33,20 @@ document.getElementById('guestForm').addEventListener('submit', async (e) => {
     alert('Unable to continue as guest');
   }
 });
+
+// register new user and log in directly
+const regForm = document.getElementById('registerForm');
+if (regForm) {
+  regForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const username = e.target.username.value;
+    const password = e.target.password.value;
+    try {
+      await postJSON('/register', { username, password });
+      await postJSON('/login', { username, password });
+      window.location.href = '/lobby.html';
+    } catch (err) {
+      alert('Registration failed');
+    }
+  });
+}
