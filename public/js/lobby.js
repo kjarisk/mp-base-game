@@ -1,5 +1,18 @@
 // lobby.js - handles game lobby interactions
 const socket = io();
+let currentUser = null;
+
+fetch('/me')
+  .then((res) => {
+    if (!res.ok) {
+      window.location.href = '/';
+      return null;
+    }
+    return res.json();
+  })
+  .then((data) => {
+    if (data) currentUser = data.username;
+  });
 
 function renderGames(list) {
   const container = document.getElementById('gamesList');
@@ -28,6 +41,7 @@ socket.on('gamesList', (list) => {
 const form = document.getElementById('createGameForm');
 form.addEventListener('submit', (e) => {
   e.preventDefault();
+  if (!currentUser) return;
   const name = document.getElementById('gameNameInput').value.trim();
   const id = Math.random().toString(36).substring(2, 9);
   window.location.href = `./game.html?gameId=${id}&create=1&name=${encodeURIComponent(name)}`;

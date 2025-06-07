@@ -36,4 +36,21 @@ router.post('/login', async (req, res) => {
   res.json({ message: 'Logged in' });
 });
 
+router.post('/guest', (req, res) => {
+  const { username } = req.body;
+  if (!username) {
+    return res.status(400).json({ message: 'Name required' });
+  }
+  db.createPlayer(username);
+  req.session.user = { username, guest: true };
+  res.json({ message: 'Guest' });
+});
+
+router.get('/me', (req, res) => {
+  if (!req.session.user) {
+    return res.status(401).json({ message: 'Not logged in' });
+  }
+  res.json({ username: req.session.user.username });
+});
+
 module.exports = router;
