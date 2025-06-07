@@ -18,28 +18,26 @@
         left: 0;
       }
 
-      h1 {
-        color: white;
-        font-size: 120px;
+      #lobby {
         position: absolute;
-        font-family: Impact, cursive;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        border-top: 10px solid white;
+        background: rgba(0, 0, 0, 0.7);
+        padding: 20px;
+        color: white;
+        font-family: 'Comic Sans MS', cursive;
+        width: 300px;
       }
 
-      #startButton {
-        position: absolute;
-        top: calc(50% + 120px);
-        left: 50%;
-        transform: translate(-50%, -50%);
-        padding: 20px 40px;
-        font-size: 32px;
-        font-family: Impact, cursive;
-        background: white;
-        color: black;
-        border: none;
+      #gamesList div {
+        margin-bottom: 8px;
+        display: flex;
+        justify-content: space-between;
+      }
+
+      button {
+        font-family: 'Comic Sans MS', cursive;
         cursor: pointer;
       }
     </style>
@@ -47,17 +45,23 @@
   </head>
   <body>
     <canvas id="myCanvas"></canvas>
-    <h1 id="caption">Welcome To the Game</h1>
-    <button id="startButton">Start Game</button>
+    <h1 id="caption" style="display:none">MP Game</h1>
+    <div id="lobby">
+      <div id="gamesList"></div>
+      <form id="createGameForm" style="margin-top: 10px;">
+        <input
+          id="gameNameInput"
+          type="text"
+          placeholder="Game name"
+          style="width: 100%; padding: 4px; margin-bottom: 4px;"
+        />
+        <button type="submit" style="width: 100%;">Create Game</button>
+      </form>
+    </div>
+    <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
     <script src="./js/classes/ObjectClass.js"></script>
     <script src="./js/main.js"></script>
     <script src="./js/utils.js"></script>
-    <script>
-      document
-        .getElementById('startButton')
-        .addEventListener('click', () => {
-          window.location.href = './game.html';
-        });
-    </script>
+    <script src="./js/lobby.js"></script>
   </body>
 </html>
