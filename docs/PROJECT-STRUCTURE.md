@@ -90,10 +90,10 @@ config/
 
 ```
 docs/
-├── 📄 DEPLOYMENT.md       # Complete deployment guide
-├── 📄 LINODE-SETUP.md     # Server setup instructions
-├── 📄 SERVER-SETUP.md     # Quick server reference
-└── 📄 CI-CD-SETUP.md      # GitHub Actions setup
+├── 📄 QUICK-START.md      # Essential setup and usage guide
+├── 📄 TROUBLESHOOTING.md  # Common issues and fixes
+├── 📄 PROJECT-STRUCTURE.md # This file - project organization
+└── 📄 CONFIGURATION.md    # Environment vs Game configuration
 ```
 
 ## 🚀 Scripts & Automation (`/scripts/`)

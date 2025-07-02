@@ -61,13 +61,10 @@ For detailed structure explanation, see [docs/PROJECT-STRUCTURE.md](./docs/PROJE
 
 ## Documentation
 
-- **[Getting Started](./readme.md)** - This file
-- **[Project Structure](./docs/PROJECT-STRUCTURE.md)** - Detailed structure guide
-- **[Deployment Guide](./docs/DEPLOYMENT.md)** - Complete deployment instructions
-- **[Linode Setup](./docs/LINODE-SETUP.md)** - Server setup steps
-- **[CI/CD Setup](./docs/CI-CD-SETUP.md)** - GitHub Actions configuration
-- **[Troubleshooting](./docs/TROUBLESHOOTING.md)** - Common issues and solutions
-- **[PM2 & Nginx Troubleshooting](./docs/PM2-NGINX-TROUBLESHOOTING.md)** - Server configuration fixes
+- **[Quick Start Guide](./docs/QUICK-START.md)** - Get up and running fast
+- **[Troubleshooting](./docs/TROUBLESHOOTING.md)** - Fix common issues
+- **[Project Structure](./docs/PROJECT-STRUCTURE.md)** - Understand the codebase
+- **[Configuration Guide](./docs/CONFIGURATION.md)** - Environment vs Game config
 
 ## Management Scripts
 

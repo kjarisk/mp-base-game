@@ -136,7 +136,7 @@ organize_existing_backups() {
     echo -e "${YELLOW}Organizing existing backup folders...${NC}"
     
     # Look for backup folders in common locations
-    local locations=("/root" "." "/home/$USER")
+    local locations=("/" "." "/home/$USER")
     
     for location in "${locations[@]}"; do
         if [ -d "$location" ]; then

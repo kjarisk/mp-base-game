@@ -3,6 +3,7 @@
     {
       "name": "mp-base-game-test",
       "script": "backend/server.js",
+      "cwd": "/mp-base-game-test",
       "instances": 1,
       "exec_mode": "fork",
       "watch": true,

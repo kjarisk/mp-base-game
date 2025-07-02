@@ -50,6 +50,7 @@ async function startServer() {
   app.use(express.static(join(__dirname, '../frontend/public')));
   app.use(authRoutes);
   app.use(questRoutes);
+  app.use('/api/game', require('./routes/game'));
 
   // Health check endpoint
   app.get('/health', (req, res) => {

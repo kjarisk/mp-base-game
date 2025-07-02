@@ -1,4 +1,5 @@
 require('dotenv').config();
+const gameConfig = require('../../shared/gameConfig');
 
 const config = {
   server: {
@@ -6,18 +7,18 @@ const config = {
     sessionSecret: process.env.SESSION_SECRET || 'keyboard cat'
   },
   socket: {
-    pingInterval: 2000,
-    pingTimeout: 5000
+    pingInterval: gameConfig.SOCKET_PING_INTERVAL,
+    pingTimeout: gameConfig.SOCKET_PING_TIMEOUT
   },
   game: {
-    playerSpeed: 5,
+    playerSpeed: gameConfig.PLAYER_SPEED,
     playerRadius: 10,
     projectileRadius: 5,
-    maxPlayersPerGame: parseInt(process.env.MAX_PLAYERS_PER_GAME) || 10,
-    projectileSpeed: parseInt(process.env.PROJECTILE_SPEED) || 5,
+    maxPlayersPerGame: gameConfig.MAX_PLAYERS_PER_GAME,
+    projectileSpeed: gameConfig.PROJECTILE_SPEED,
     canvasDefaults: {
-      width: 1024,
-      height: 768
+      width: gameConfig.MAP_WIDTH,
+      height: gameConfig.MAP_HEIGHT
     }
   },
   database: {

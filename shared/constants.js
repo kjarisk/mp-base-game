@@ -1,22 +1,24 @@
 // Game constants shared between frontend and backend
+const gameConfig = require('./gameConfig');
+
 const GAME_CONSTANTS = {
-  PLAYER_SPEED: 5,
-  PLAYER_RADIUS: 10,
-  PROJECTILE_RADIUS: 5,
-  MAX_PLAYERS_PER_GAME: 10,
+  PLAYER_SPEED: gameConfig.PLAYER_SPEED,
+  PLAYER_RADIUS: 10, // Visual constant, not in config
+  PROJECTILE_RADIUS: 5, // Visual constant, not in config
+  MAX_PLAYERS_PER_GAME: gameConfig.MAX_PLAYERS_PER_GAME,
   PROJECTILE_LIFETIME: 5000, // 5 seconds
-  TICK_RATE: 60, // Server update rate
+  TICK_RATE: gameConfig.GAME_TICK_RATE,
   
   // Canvas defaults
-  CANVAS_WIDTH: 1024,
-  CANVAS_HEIGHT: 768,
+  CANVAS_WIDTH: gameConfig.MAP_WIDTH,
+  CANVAS_HEIGHT: gameConfig.MAP_HEIGHT,
   
   // Collision detection
   COLLISION_PADDING: 2,
   
   // Network
-  PING_INTERVAL: 2000,
-  PING_TIMEOUT: 5000
+  PING_INTERVAL: gameConfig.SOCKET_PING_INTERVAL,
+  PING_TIMEOUT: gameConfig.SOCKET_PING_TIMEOUT
 };
 
 const GAME_STATES = {
