@@ -123,20 +123,25 @@ cd mp-base-game-test
 # SSH into your Linode server first
 ssh root@your-server-ip
 
-# Navigate to your project directory
-cd mp-base-game-test
-
-# Organize existing backup folders (moves backup-* folders to ./backups/)
-./scripts/backup-manager.sh organize
-
-# Check that old folders are gone from root
+# You should now be in /root/ where you can see the backup folders
 ls -la | grep backup
 
-# Check that they're now in backups directory
-ls -la backups/
+# Method 1: Move backups into project backups directory
+mkdir -p mp-base-game-test/backups
+mv backup-20250702-* mp-base-game-test/backups/
 
-# Remove any remaining backup folders at root level if needed
-rm -rf backup-*
+# OR Method 2: Create a dedicated backups folder at root level
+mkdir -p backups
+mv backup-20250702-* backups/
+
+# Method 3: Direct removal (if you don't need the old backups)
+rm -rf backup-20250702-*
+
+# Verify cleanup worked
+ls -la | grep backup  # Should show no backup folders at root level
+ls -la mp-base-game-test/backups/  # Check if moved to project
+# OR
+ls -la backups/  # Check if moved to root-level backups folder
 ```
 
 ## 📋 **Expected Result:**

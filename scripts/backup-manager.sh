@@ -130,17 +130,48 @@ restore_database() {
 organize_existing_backups() {
     echo -e "${YELLOW}Organizing existing backup folders...${NC}"
     
-    # Look for backup folders in current directory
-    find . -maxdepth 1 -name "backup-*" -type d 2>/dev/null | while read backup_dir; do
-        local dirname=$(basename "$backup_dir")
-        local target="$BACKUP_DIR/archived_$dirname"
-        
-        echo "  Moving $backup_dir to $target"
-        mkdir -p "$BACKUP_DIR"
-        mv "$backup_dir" "$target" 2>/dev/null
-    done
+    # Create backup directory if it doesn't exist
+    mkdir -p "$BACKUP_DIR"
     
-    echo -e "${GREEN}✅ Existing backups organized${NC}"
+    # Look for backup folders at the parent directory level (where we SSH in)
+    local found=0
+    
+    # Check parent directory for backup folders
+    if [ -d "../" ]; then
+        cd ..
+        
+        # Pattern 1: backup-YYYYMMDD-HHMMSS
+        for backup_dir in backup-[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]-[0-9]*; do
+            if [ -d "$backup_dir" ]; then
+                local dirname=$(basename "$backup_dir")
+                local target="$(pwd)/$(basename "$OLDPWD")/$BACKUP_DIR/archived_$dirname"
+                
+                echo "  Moving $backup_dir to $target"
+                mv "$backup_dir" "$target" 2>/dev/null
+                found=1
+            fi
+        done
+        
+        # Pattern 2: backup-* (general pattern)
+        for backup_dir in backup-*; do
+            if [ -d "$backup_dir" ] && [ ! -d "$(basename "$OLDPWD")/$BACKUP_DIR/archived_$(basename "$backup_dir")" ]; then
+                local dirname=$(basename "$backup_dir") 
+                local target="$(pwd)/$(basename "$OLDPWD")/$BACKUP_DIR/archived_$dirname"
+                
+                echo "  Moving $backup_dir to $target"
+                mv "$backup_dir" "$target" 2>/dev/null
+                found=1
+            fi
+        done
+        
+        cd "$OLDPWD"
+    fi
+    
+    if [ $found -eq 1 ]; then
+        echo -e "${GREEN}✅ Existing backups organized${NC}"
+    else
+        echo -e "${GREEN}✅ No backup folders found to organize${NC}"
+    fi
 }
 
 # Show usage
