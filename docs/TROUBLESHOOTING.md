@@ -44,6 +44,43 @@ chmod +x scripts/server-fix.sh
 
 ## 🆘 **Common Issues:**
 
+### **"Invalid package config" / Corrupted node_modules**
+```bash
+cd mp-base-game-test
+pm2 delete all
+
+# Remove corrupted node_modules
+rm -rf node_modules package-lock.json
+
+# Clean install
+npm install
+
+# Start again
+pm2 start config/ecosystem.test.json
+pm2 logs --lines 5
+```
+
+### **502 Bad Gateway (Nginx)**
+```bash
+# Check if app is actually running
+curl http://localhost:3001/health
+
+# If app is running but Nginx shows 502, check Nginx config
+sudo nginx -t
+
+# Check what port Nginx expects vs what app runs on
+sudo cat /etc/nginx/sites-available/test-multiplayer.kjarisk.com | grep proxy_pass
+sudo cat /etc/nginx/sites-available/multiplayer.kjarisk.com | grep proxy_pass
+
+# Fix wrong port in test site (common issue)
+sudo nano /etc/nginx/sites-available/test-multiplayer.kjarisk.com
+# Change: proxy_pass http://localhost:4000;
+# To:     proxy_pass http://localhost:3001;
+
+# Then reload Nginx
+sudo nginx -t && sudo systemctl reload nginx
+```
+
 ### **"Cannot find module 'dotenv'"**
 ```bash
 cd mp-base-game-test
