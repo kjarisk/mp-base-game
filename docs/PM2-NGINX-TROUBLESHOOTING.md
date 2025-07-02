@@ -38,8 +38,8 @@ pm2 start config/ecosystem.production.json
 #### Check if the app is running on the correct port
 ```bash
 # Test direct access to the app
-curl http://localhost:3000/health  # for test
-curl http://localhost:3001/health  # for production
+curl http://localhost:3001/health  # for test
+curl http://localhost:3000/health  # for production
 
 # If no response, check PM2 status
 pm2 status
@@ -52,7 +52,7 @@ pm2 logs
    ```nginx
    # In /etc/nginx/sites-available/mp-game
    upstream backend {
-       server 127.0.0.1:3000;  # Should match PORT in ecosystem file
+       server 127.0.0.1:3001;  # Should match PORT in ecosystem file
    }
    ```
 
@@ -116,8 +116,8 @@ ls -la logs/
 
 #### Check what's using the ports
 ```bash
-sudo netstat -tlnp | grep :3000
 sudo netstat -tlnp | grep :3001
+sudo netstat -tlnp | grep :3000
 
 # Kill processes if needed
 sudo kill -9 <PID>
@@ -126,8 +126,8 @@ sudo kill -9 <PID>
 #### Update ports if needed
 ```bash
 # Edit ecosystem files
-nano config/ecosystem.test.json    # PORT: 3000
-nano config/ecosystem.production.json  # PORT: 3001
+nano config/ecosystem.test.json    # PORT: 3001
+nano config/ecosystem.production.json  # PORT: 3000
 
 # Update Nginx upstream accordingly
 sudo nano /etc/nginx/sites-available/mp-game
@@ -150,8 +150,8 @@ pm2 start config/ecosystem.production.json
 
 # 4. Verify
 pm2 status
-curl http://localhost:3000/health
 curl http://localhost:3001/health
+curl http://localhost:3000/health
 
 # 5. Test Nginx
 sudo nginx -t
@@ -199,14 +199,14 @@ psql -h localhost -U mp_game_user mp_game_test
 psql -h localhost -U mp_game_user mp_game_prod
 
 # Test database status via API
-curl http://localhost:3000/health
 curl http://localhost:3001/health
+curl http://localhost:3000/health
 ```
 
 ## Quick Diagnostic Checklist
 
 1. ✅ PM2 processes running without errors
-2. ✅ Apps responding on correct ports (3000, 3001)
+2. ✅ Apps responding on correct ports (3001 test, 3000 prod)
 3. ✅ Nginx configuration syntax valid
 4. ✅ Nginx pointing to correct upstream ports
 5. ✅ Environment files loaded correctly

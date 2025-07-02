@@ -14,7 +14,7 @@
     "deploy:test": "pm2 start config/ecosystem.test.json",
     "deploy:prod": "pm2 start config/ecosystem.production.json",
     "logs": "pm2 logs",
-    "health": "curl -f http://localhost:3000/health || echo 'Server not responding'",
+    "health": "curl -f http://localhost:3000/health && curl -f http://localhost:3001/health || echo 'One or both servers not responding'",
     "server:fix": "chmod +x scripts/server-fix.sh && ./scripts/server-fix.sh",
     "server:status": "chmod +x scripts/server-fix.sh && ./scripts/server-fix.sh status",
     "backup:init": "chmod +x scripts/backup-manager.sh && ./scripts/backup-manager.sh init",

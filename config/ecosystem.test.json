@@ -10,7 +10,7 @@
       "env_file": "config/.env.test",
       "env": {
         "NODE_ENV": "test",
-        "PORT": 3000
+        "PORT": 3001
       },
       "error_file": "logs/test-err.log",
       "out_file": "logs/test-out.log",

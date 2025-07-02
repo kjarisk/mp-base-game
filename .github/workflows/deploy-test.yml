@@ -51,7 +51,7 @@ jobs:
             # Health check
             echo "Waiting for application to start..."
             sleep 10
-            curl -f http://localhost:3000/health || echo "Health check failed - check logs"
+            curl -f http://localhost:3001/health || echo "Health check failed - check logs"
             
             echo "Test deployment completed successfully!"
           EOF
