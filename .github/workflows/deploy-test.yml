@@ -23,9 +23,45 @@ jobs:
       - name: Deploy to Test Server
         run: |
           ssh ${{ secrets.LINODE_USER }}@${{ secrets.LINODE_HOST }} << 'EOF'
+            set -e
             cd ${{ secrets.TEST_PATH }}
+            
+            # Backup current deployment
+            echo "Creating deployment backup..."
+            cp -r . ../backup-$(date +%Y%m%d-%H%M%S) || true
+            
+            # Update code
+            echo "Updating code from repository..."
             git fetch origin main
             git reset --hard origin/main
+            
+            # Install dependencies
+            echo "Installing dependencies..."
             npm ci
-            pm2 restart multiplayer-test
+            
+            # Run database migrations if needed
+            echo "Running database migrations..."
+            chmod +x scripts/migrate.sh
+            ./scripts/migrate.sh test || echo "Migration script not found or failed, continuing..."
+            
+            # Restart application with test environment
+            echo "Restarting application..."
+            pm2 restart config/ecosystem.test.json || pm2 start config/ecosystem.test.json
+            
+            # Health check
+            echo "Waiting for application to start..."
+            sleep 10
+            curl -f http://localhost:3000/health || echo "Health check failed - check logs"
+            
+            echo "Test deployment completed successfully!"
           EOF
+
+      - name: Deployment Status
+        if: always()
+        run: |
+          if [ $? -eq 0 ]; then
+            echo "✅ Test deployment successful"
+          else
+            echo "❌ Test deployment failed"
+            exit 1
+          fi

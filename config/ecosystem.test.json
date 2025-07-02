@@ -1,0 +1,23 @@
+{
+  "apps": [
+    {
+      "name": "mp-base-game-test",
+      "script": "backend/server.js",
+      "instances": 1,
+      "exec_mode": "fork",
+      "watch": true,
+      "ignore_watch": ["node_modules", "logs", ".git"],
+      "env_file": ".env.test",
+      "env": {
+        "NODE_ENV": "test",
+        "PORT": 3000
+      },
+      "error_file": "logs/test-err.log",
+      "out_file": "logs/test-out.log",
+      "log_file": "logs/test-combined.log",
+      "time": true,
+      "max_restarts": 10,
+      "min_uptime": "10s"
+    }
+  ]
+}

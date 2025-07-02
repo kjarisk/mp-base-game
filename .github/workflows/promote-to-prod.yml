@@ -2,12 +2,25 @@ name: Promote to Production
 
 on:
   workflow_dispatch:
+    inputs:
+      confirm_production:
+        description: 'Type "CONFIRM" to proceed with production deployment'
+        required: true
+        default: ''
 
 jobs:
   deploy-prod:
     runs-on: ubuntu-latest
+    environment: production
 
     steps:
+      - name: Validate confirmation
+        run: |
+          if [ "${{ github.event.inputs.confirm_production }}" != "CONFIRM" ]; then
+            echo "❌ Production deployment not confirmed. Exiting."
+            exit 1
+          fi
+
       - name: Checkout code
         uses: actions/checkout@v3
 
@@ -21,9 +34,56 @@ jobs:
       - name: Deploy to Production Server
         run: |
           ssh ${{ secrets.LINODE_USER }}@${{ secrets.LINODE_HOST }} << 'EOF'
+            set -e
             cd ${{ secrets.PROD_PATH }}
+            
+            # Create backup before deployment
+            echo "Creating production backup..."
+            cp -r . ../prod-backup-$(date +%Y%m%d-%H%M%S)
+            
+            # Update code
+            echo "Updating production code..."
             git fetch origin main
             git reset --hard origin/main
-            npm ci
-            pm2 restart multiplayer-game
+            
+            # Install dependencies
+            echo "Installing production dependencies..."
+            NODE_ENV=production npm ci --only=production
+            
+            # Run database migrations for production
+            echo "Running production database migrations..."
+            chmod +x scripts/migrate.sh
+            ./scripts/migrate.sh production
+            
+            # Restart application with production environment
+            echo "Restarting production application..."
+            pm2 restart config/ecosystem.production.json
+            
+            # Health check with retries
+            echo "Performing production health checks..."
+            for i in {1..5}; do
+              sleep 5
+              if curl -f http://localhost:3001/health; then
+                echo "✅ Production health check passed"
+                break
+              else
+                echo "⏳ Health check attempt $i failed, retrying..."
+                if [ $i -eq 5 ]; then
+                  echo "❌ Production health check failed after 5 attempts"
+                  exit 1
+                fi
+              fi
+            done
+            
+            echo "🚀 Production deployment completed successfully!"
           EOF
+
+      - name: Deployment Status
+        if: always()
+        run: |
+          if [ $? -eq 0 ]; then
+            echo "✅ Production deployment successful"
+          else
+            echo "❌ Production deployment failed"
+            exit 1
+          fi

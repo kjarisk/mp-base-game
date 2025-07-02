@@ -1,31 +1,145 @@
-Base for a multiplayer game
+# Multiplayer Game Starter
 
-## Usage
+A modern, scalable multiplayer game starter with robust backend architecture, PostgreSQL support, and automated CI/CD deployment.
 
-Install dependencies and start the backend server:
+## Features
 
+- **Modern Backend Architecture**: Organized service layers, middleware, and database abstraction
+- **Dual Database Support**: PostgreSQL for production with in-memory fallback for development
+- **Real-time Multiplayer**: Socket.IO-based game rooms and player interactions
+- **Authentication System**: Session-based auth with guest mode support
+- **Automated CI/CD**: GitHub Actions workflows for test and production deployment
+- **Production Ready**: PM2 process management, health checks, and environment separation
+
+## Quick Start
+
+### Development
 ```bash
+# Install dependencies
 npm install
+
+# Start development server (uses in-memory storage by default)
+npm run dev
+
+# Or start with PostgreSQL (requires DATABASE_URL in .env)
 npm start
 ```
 
-Visit `http://localhost:3000` and log in or choose a guest name. After that you can create or join games in real time and each game runs in its own Socket.IO room.
+Visit `http://localhost:3000` to access the game lobby.
 
-## Environment Variables
+### Production Deployment
+See [DEPLOYMENT.md](./DEPLOYMENT.md) for complete deployment instructions.
 
-Set the `SESSION_SECRET` variable to a strong value in production. This secret is used to sign session cookies. If not defined, the server falls back to a development default.
+## Architecture
 
-## Tests
+```
+backend/
+├── config/          # Environment configuration
+├── database/        # Database abstraction layer (PostgreSQL + in-memory)
+├── middleware/      # Express middleware
+├── models/          # Data models and schemas
+├── routes/          # API route handlers
+├── services/        # Business logic layer
+├── socket/          # Socket.IO event handlers
+└── utils/          # Logging and utilities
 
-Run the automated tests with:
+frontend/
+├── public/         # Static HTML pages
+├── js/             # Client-side JavaScript
+│   ├── classes/    # Game object classes
+│   └── *.js        # Page-specific scripts
+└── styles/         # CSS stylesheets
 
-```bash
-npm test
+config/             # Configuration files
+docs/               # Documentation
+scripts/            # Deployment scripts
+shared/             # Shared constants
+test/               # Test suite
 ```
 
-## Deployment Notes
+For detailed structure explanation, see [docs/PROJECT-STRUCTURE.md](./docs/PROJECT-STRUCTURE.md).
 
-Player data is stored in `players.json`, which the server updates at runtime. The
-file is generated automatically and is no longer tracked in git. Deployment
-workflows reset local changes before pulling from `main` so that modified files
-like `package-lock.json` do not cause merge conflicts.
+## Documentation
+
+- **[Getting Started](./readme.md)** - This file
+- **[Project Structure](./docs/PROJECT-STRUCTURE.md)** - Detailed structure guide
+- **[Deployment Guide](./docs/DEPLOYMENT.md)** - Complete deployment instructions
+- **[Linode Setup](./docs/LINODE-SETUP.md)** - Server setup steps
+- **[CI/CD Setup](./docs/CI-CD-SETUP.md)** - GitHub Actions configuration
+
+## Environment Configuration
+
+Create environment files for different deployments:
+
+**Development (.env)**
+```bash
+NODE_ENV=development
+PORT=3000
+SESSION_SECRET=dev-secret-key
+# Leave DATABASE_URL empty for in-memory storage
+```
+
+**Production (config/.env.production)**
+```bash
+NODE_ENV=production
+PORT=3001
+DATABASE_URL=postgresql://user:pass@localhost:5432/gamedb
+SESSION_SECRET=strong-production-secret
+```
+
+## Available Scripts
+
+```bash
+npm start          # Start production server
+npm run dev        # Start development server
+npm test           # Run test suite
+npm run migrate    # Run database migrations
+npm run health     # Check server health
+npm run logs       # View PM2 logs
+```
+
+## Database
+
+The application supports both PostgreSQL and in-memory storage:
+
+- **PostgreSQL**: Set `DATABASE_URL` environment variable
+- **In-Memory**: Leave `DATABASE_URL` empty (default for development)
+
+Data automatically migrates between storage types without code changes.
+
+## Testing
+
+```bash
+npm test           # Run all tests
+npm run test:watch # Run tests in watch mode
+```
+
+## Deployment
+
+The project includes automated GitHub Actions workflows:
+
+- **Test Deployment**: Automatic on push to `main`
+- **Production Deployment**: Manual trigger with confirmation
+- **Continuous Testing**: On pull requests and pushes
+
+See [docs/DEPLOYMENT.md](./docs/DEPLOYMENT.md) for detailed setup instructions.
+
+## Game Features
+
+- **Player Authentication**: Login system with guest mode
+- **Real-time Lobbies**: Create and join game rooms
+- **Multiplayer Gameplay**: Socket.IO-powered real-time interactions
+- **Quest System**: Configurable game objectives
+- **Responsive UI**: Modern web interface
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Run tests: `npm test`
+5. Submit a pull request
+
+## License
+
+MIT License - see [LICENSE](./LICENSE) for details.

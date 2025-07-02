@@ -1,6 +1,6 @@
 const logger = require('../utils/logger');
 const GameService = require('../services/GameService');
-const db = require('../db');
+const db = require('../database');
 
 class SocketHandler {
   constructor(io) {
@@ -45,7 +45,7 @@ class SocketHandler {
     }, 16);
   }
 
-  handleGameInit(socket, data) {
+  async handleGameInit(socket, data) {
     try {
       const { width, height, username, gameId, create, gameName } = data;
 
@@ -67,7 +67,7 @@ class SocketHandler {
       }
 
       // Create/update player in database
-      db.createPlayer(username);
+      await db.createPlayer(username);
 
       // Join socket room
       socket.join(gameId);

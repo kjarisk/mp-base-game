@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const config = {
   server: {
     port: process.env.PORT || 3000,
@@ -11,14 +13,16 @@ const config = {
     playerSpeed: 5,
     playerRadius: 10,
     projectileRadius: 5,
-    maxPlayersPerGame: 10,
+    maxPlayersPerGame: parseInt(process.env.MAX_PLAYERS_PER_GAME) || 10,
+    projectileSpeed: parseInt(process.env.PROJECTILE_SPEED) || 5,
     canvasDefaults: {
       width: 1024,
       height: 768
     }
   },
   database: {
-    filePath: 'players.json',
+    url: process.env.DATABASE_URL,
+    filePath: 'players.json', // Fallback for in-memory mode
     autoSave: true
   }
 };
