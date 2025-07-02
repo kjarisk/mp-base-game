@@ -7,9 +7,7 @@ echo "🚀 Deploying from TEST to PRODUCTION..."
 
 # Step 1: Backup production database
 echo "📦 Creating production backup..."
-BACKUP_FILE="backup_$(date +%Y%m%d_%H%M%S).sql"
-PGPASSWORD=prod_password_456 pg_dump -h localhost -U mp_game_user mp_game_prod > backups/$BACKUP_FILE
-echo "✅ Backup saved: backups/$BACKUP_FILE"
+./scripts/backup-manager.sh backup production
 
 # Step 2: Stop production server
 echo "🛑 Stopping production server..."
@@ -31,7 +29,7 @@ echo "🗄️ Running production migrations..."
 
 # Step 6: Start production server
 echo "🚀 Starting production server..."
-pm2 start ecosystem.production.json
+pm2 start config/ecosystem.production.json
 
 echo "✅ Deployment complete!"
 echo "🔍 Check status: pm2 status"

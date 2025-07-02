@@ -8,6 +8,12 @@ players.json
 *.sqlite
 *.sqlite3
 
+# Backup files and directories
+backups/*.sql
+backup-*/
+var/backups/
+*.backup
+
 # Environment variables
 .env
 .env.local

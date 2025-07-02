@@ -67,6 +67,46 @@ For detailed structure explanation, see [docs/PROJECT-STRUCTURE.md](./docs/PROJE
 - **[Linode Setup](./docs/LINODE-SETUP.md)** - Server setup steps
 - **[CI/CD Setup](./docs/CI-CD-SETUP.md)** - GitHub Actions configuration
 - **[Troubleshooting](./docs/TROUBLESHOOTING.md)** - Common issues and solutions
+- **[PM2 & Nginx Troubleshooting](./docs/PM2-NGINX-TROUBLESHOOTING.md)** - Server configuration fixes
+
+## Management Scripts
+
+### Server Management
+```bash
+# Complete server reset and setup
+./scripts/server-fix.sh full-fix
+
+# Check current status
+./scripts/server-fix.sh status
+
+# Clean PM2 processes
+./scripts/server-fix.sh clean
+
+# Start applications
+./scripts/server-fix.sh start
+```
+
+### Backup Management
+```bash
+# Initialize backup system
+./scripts/backup-manager.sh init
+
+# Create database backup
+./scripts/backup-manager.sh backup test
+./scripts/backup-manager.sh backup production
+
+# List available backups
+./scripts/backup-manager.sh list
+
+# Clean old backups
+./scripts/backup-manager.sh cleanup
+```
+
+### Common Fixes
+- **502 Bad Gateway**: Run `./scripts/server-fix.sh full-fix`
+- **PM2 Process Errors**: Run `./scripts/server-fix.sh clean && ./scripts/server-fix.sh start`
+- **Port Conflicts**: Run `./scripts/server-fix.sh ports`
+- **Backup Organization**: Run `./scripts/backup-manager.sh organize`
 
 ## Environment Configuration
 
