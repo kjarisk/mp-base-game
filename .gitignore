@@ -10,8 +10,8 @@ players.json
 
 # Backup files and directories
 backups/*.sql
+backups/archived_*
 backup-*/
-var/backups/
 *.backup
 
 # Environment variables

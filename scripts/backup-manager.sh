@@ -3,8 +3,7 @@
 # Backup Management Script
 # Organizes and manages database backups
 
-BACKUP_DIR="/var/backups/mp-game"
-PROJECT_BACKUP_DIR="./backups"
+BACKUP_DIR="./backups"
 RETENTION_DAYS=30
 
 # Colors for output
@@ -17,12 +16,8 @@ NC='\033[0m' # No Color
 create_backup_dirs() {
     echo -e "${YELLOW}Creating backup directories...${NC}"
     
-    # Create system backup directory (requires sudo)
-    sudo mkdir -p "$BACKUP_DIR"
-    sudo chown $USER:$USER "$BACKUP_DIR"
-    
-    # Create project backup directory
-    mkdir -p "$PROJECT_BACKUP_DIR"
+    # Create backup directory
+    mkdir -p "$BACKUP_DIR"
     
     echo -e "${GREEN}✅ Backup directories created${NC}"
 }
@@ -45,8 +40,8 @@ backup_database() {
     if [ $? -eq 0 ]; then
         echo -e "${GREEN}✅ Backup created: $backup_path${NC}"
         
-        # Create symlink in project directory for easy access
-        ln -sf "$backup_path" "$PROJECT_BACKUP_DIR/latest_${env}.sql"
+        # Create symlink for easy access
+        ln -sf "$backup_path" "$BACKUP_DIR/latest_${env}.sql"
         
         # Show backup size
         local size=$(du -h "$backup_path" | cut -f1)
@@ -84,8 +79,8 @@ list_backups() {
     fi
     
     echo ""
-    echo -e "${YELLOW}Latest symlinks in project:${NC}"
-    ls -lah "$PROJECT_BACKUP_DIR"/latest_*.sql 2>/dev/null || echo "  No latest backups found"
+    echo -e "${YELLOW}Latest symlinks:${NC}"
+    ls -lah "$BACKUP_DIR"/latest_*.sql 2>/dev/null || echo "  No latest backups found"
 }
 
 # Restore database
@@ -135,19 +130,14 @@ restore_database() {
 organize_existing_backups() {
     echo -e "${YELLOW}Organizing existing backup folders...${NC}"
     
-    # Look for backup folders in common locations
-    local locations=("/" "." "/home/$USER")
-    
-    for location in "${locations[@]}"; do
-        if [ -d "$location" ]; then
-            find "$location" -maxdepth 1 -name "backup-*" -type d 2>/dev/null | while read backup_dir; do
-                local dirname=$(basename "$backup_dir")
-                local target="$BACKUP_DIR/archived_$dirname"
-                
-                echo "  Moving $backup_dir to $target"
-                sudo mv "$backup_dir" "$target" 2>/dev/null || mv "$backup_dir" "$target" 2>/dev/null
-            done
-        fi
+    # Look for backup folders in current directory
+    find . -maxdepth 1 -name "backup-*" -type d 2>/dev/null | while read backup_dir; do
+        local dirname=$(basename "$backup_dir")
+        local target="$BACKUP_DIR/archived_$dirname"
+        
+        echo "  Moving $backup_dir to $target"
+        mkdir -p "$BACKUP_DIR"
+        mv "$backup_dir" "$target" 2>/dev/null
     done
     
     echo -e "${GREEN}✅ Existing backups organized${NC}"

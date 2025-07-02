@@ -108,6 +108,37 @@ pm2 logs <app-name>  # Check error details
 pm2 restart <app-name>
 ```
 
+### **Backup Management**
+```bash
+# Create backups locally (stores in ./backups/)
+cd mp-base-game-test
+./scripts/backup-manager.sh init      # Initialize backup directory
+./scripts/backup-manager.sh backup test      # Backup test database
+./scripts/backup-manager.sh list      # List available backups
+./scripts/backup-manager.sh cleanup   # Remove old backups
+```
+
+### **Clean Up Existing Backup Folders (On Server)**
+```bash
+# SSH into your Linode server first
+ssh root@your-server-ip
+
+# Navigate to your project directory
+cd mp-base-game-test
+
+# Organize existing backup folders (moves backup-* folders to ./backups/)
+./scripts/backup-manager.sh organize
+
+# Check that old folders are gone from root
+ls -la | grep backup
+
+# Check that they're now in backups directory
+ls -la backups/
+
+# Remove any remaining backup folders at root level if needed
+rm -rf backup-*
+```
+
 ## 📋 **Expected Result:**
 ```
 ┌─────┬──────────────────────┬─────────────┬─────────┬─────────┬──────────┐
