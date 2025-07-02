@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./styles/style.css" />
     <style>
       * {
         box-sizing: border-box;
@@ -12,7 +13,14 @@
       }
 
       #myCanvas {
-        background: url('./img/startBackground.png') center/cover no-repeat;
+        background: var(--bg-color);
+        background-image: 
+          radial-gradient(circle at 20% 80%, rgba(0, 240, 255, 0.1) 0%, transparent 50%),
+          radial-gradient(circle at 80% 20%, rgba(255, 0, 240, 0.1) 0%, transparent 50%),
+          url('./img/startBackground.png');
+        background-blend-mode: overlay;
+        background-size: cover;
+        background-position: center;
         position: absolute;
         top: 0;
         left: 0;
@@ -23,40 +31,104 @@
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        background: rgba(0, 0, 0, 0.7);
-        padding: 20px;
-        color: white;
-        font-family: 'Comic Sans MS', cursive;
-        width: 300px;
+        background: var(--bg-overlay);
+        backdrop-filter: blur(10px);
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        padding: 30px;
+        color: var(--accent-color);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        width: 400px;
+        box-shadow: 
+          0 8px 32px rgba(0, 0, 0, 0.3),
+          inset 0 1px 0 rgba(255, 255, 255, 0.1);
       }
 
+      #lobby h2 {
+        text-align: center;
+        margin-bottom: 20px;
+        color: var(--primary-color);
+        text-shadow: 0 0 10px var(--shadow-primary);
+      }
       #gamesList div {
-        margin-bottom: 8px;
+        margin-bottom: 12px;
+        padding: 10px;
+        background: var(--input-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
         display: flex;
         justify-content: space-between;
+        transition: all 0.3s ease;
+      }
+
+      #gamesList div:hover {
+        background: rgba(0, 240, 255, 0.15);
+        border-color: var(--primary-color);
+      }
+
+      #questsList {
+        margin-top: 20px;
+        padding: 15px;
+        background: var(--input-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
       }
 
       button {
-        font-family: 'Comic Sans MS', cursive;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         cursor: pointer;
+        padding: 8px 16px;
+        border: none;
+        border-radius: 6px;
+        background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+        color: var(--bg-color);
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+
+      button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px var(--shadow-primary);
+      }
+
+      input {
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 10px;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        background: var(--input-bg);
+        color: var(--accent-color);
+        font-size: 14px;
+      }
+
+      input:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 2px rgba(0, 240, 255, 0.2);
+      }
+
+      input::placeholder {
+        color: rgba(255, 255, 255, 0.6);
       }
     </style>
-    <title>Welcom</title>
+    <title>Stellar Combat - Lobby</title>
   </head>
   <body>
     <canvas id="myCanvas"></canvas>
-    <h1 id="caption" style="display:none">MP Game</h1>
+    <h1 id="caption" style="display:none">Stellar Combat</h1>
     <div id="lobby">
+      <img src="./img/spaceship-logo.svg" alt="Game Logo" class="logo" style="width: 60px; height: 60px;">
+      <h2>Game Lobby</h2>
       <div id="gamesList"></div>
-      <div id="questsList" style="margin-top:10px;"></div>
-      <form id="createGameForm" style="margin-top: 10px;">
+      <div id="questsList"></div>
+      <form id="createGameForm" style="margin-top: 20px;">
         <input
           id="gameNameInput"
           type="text"
           placeholder="Game name"
-          style="width: 100%; padding: 4px; margin-bottom: 4px;"
         />
-        <button type="submit" style="width: 100%;">Create Game</button>
+        <button type="submit">Create Game</button>
       </form>
     </div>
     <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>

@@ -51,6 +51,7 @@ async function startServer() {
   app.use(authRoutes);
   app.use(questRoutes);
   app.use('/api/game', require('./routes/game'));
+  app.use('/api', require('./routes/game')); // Also mount game routes under /api for guest-name endpoint
 
   // Health check endpoint
   app.get('/health', (req, res) => {

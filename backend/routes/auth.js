@@ -55,6 +55,12 @@ router.post('/guest', async (req, res) => {
   }
   
   try {
+    // Check if username already exists (registered or guest)
+    const existing = await db.getPlayer(username);
+    if (existing) {
+      return res.status(400).json({ message: 'Username already taken' });
+    }
+    
     await db.createPlayer(username);
     req.session.user = { username, guest: true };
     res.json({ message: 'Guest' });

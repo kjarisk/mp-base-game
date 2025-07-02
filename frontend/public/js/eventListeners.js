@@ -1,22 +1,42 @@
+// Mouse tracking for player rotation
+window.addEventListener('mousemove', (event) => {
+  const canvas = document.querySelector('canvas');
+  if (!canvas) return;
+  
+  const { top, left } = canvas.getBoundingClientRect();
+  window.mouseX = event.clientX - left;
+  window.mouseY = event.clientY - top;
+  
+  // Update player rotation if player exists
+  if (frontEndPlayers[socket.id]) {
+    frontEndPlayers[socket.id].updateRotation(window.mouseX, window.mouseY);
+  }
+});
+
 window.addEventListener('click', (event) => {
   const canvas = document.querySelector('canvas');
+  if (!canvas) return; // Safety check for canvas
+  
+  // Safety check for player existence
+  if (!frontEndPlayers[socket.id]) {
+    console.log('Player not found for shooting');
+    return;
+  }
+  
   const { top, left } = canvas.getBoundingClientRect();
-  const playerPosition = {
-    x: frontEndPlayers[socket.id].x,
-    y: frontEndPlayers[socket.id].y
-  };
+  const player = frontEndPlayers[socket.id];
+  
+  // Get nose position for accurate shooting
+  const nosePos = player.getNosePosition();
+  
   const angle = Math.atan2(
-    event.clientY - top - playerPosition.y, // using scale for devicePixelRation
-    event.clientX - left - playerPosition.x
+    event.clientY - top - nosePos.y,
+    event.clientX - left - nosePos.x
   );
-  // const velocity = {
-  //   x: Math.cos(angle) * 5,
-  //   y: Math.sin(angle) * 5
-  // };
 
   socket.emit('shoot', {
-    x: playerPosition.x,
-    y: playerPosition.y,
+    x: nosePos.x,
+    y: nosePos.y,
     angle
   });
 

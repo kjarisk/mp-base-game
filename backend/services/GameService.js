@@ -46,8 +46,18 @@ class GameService {
       throw new Error('Game is full');
     }
 
+    // Remove any existing player with this socket ID (in case of reconnection)
     if (game.players[socketId]) {
-      throw new Error('Player already in game');
+      delete game.players[socketId];
+    }
+
+    // Create unique display name if username already exists in game
+    let displayName = playerData.username;
+    const existingUsernames = Object.values(game.players).map(p => p.username);
+    let counter = 2;
+    while (existingUsernames.includes(displayName)) {
+      displayName = `${playerData.username}_${counter}`;
+      counter++;
     }
 
     const player = {
@@ -57,7 +67,8 @@ class GameService {
       color: `hsl(${360 * Math.random()}, 100%, 50%)`,
       sequenceNumber: 0,
       score: 0,
-      username: playerData.username,
+      username: displayName,
+      originalUsername: playerData.username, // Keep track of original username
       canvas: {
         width: playerData.width,
         height: playerData.height
@@ -66,7 +77,7 @@ class GameService {
     };
 
     game.players[socketId] = player;
-    logger.info(`Player ${playerData.username} joined game ${game.name}`);
+    logger.info(`Player ${displayName} (${playerData.username}) joined game ${game.name}`);
     
     return player;
   }

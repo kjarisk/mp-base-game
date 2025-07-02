@@ -3,48 +3,100 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Debug Page</title>
+    <title>Debug Page - Stellar Combat</title>
+    <link rel="stylesheet" href="./styles/style.css" />
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             padding: 20px;
-            background: #f0f0f0;
+            background: var(--bg-color);
+            background-image: 
+                radial-gradient(circle at 20% 80%, rgba(0, 240, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 0, 240, 0.1) 0%, transparent 50%);
+            color: var(--accent-color);
+            min-height: 100vh;
         }
+        
+        .debug-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .logo {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 15px;
+        }
+        
+        h1 {
+            color: var(--primary-color);
+            text-shadow: 0 0 10px var(--shadow-primary);
+            margin-bottom: 10px;
+        }
+        
         .debug-info {
-            background: white;
+            background: var(--bg-overlay);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-color);
             padding: 20px;
-            border-radius: 8px;
+            border-radius: 12px;
             margin-bottom: 20px;
-            border: 2px solid #007bff;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
         }
+        
         .success {
-            color: green;
+            color: var(--primary-color);
             font-weight: bold;
+            text-shadow: 0 0 5px var(--shadow-primary);
         }
+        
         .error {
-            color: red;
+            color: var(--secondary-color);
             font-weight: bold;
+            text-shadow: 0 0 5px var(--shadow-secondary);
         }
+        
         button {
-            background: #007bff;
-            color: white;
-            padding: 10px 20px;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: var(--bg-color);
+            font-weight: 600;
+            padding: 12px 24px;
             border: none;
-            border-radius: 4px;
+            border-radius: 8px;
             cursor: pointer;
-            margin: 5px;
+            margin: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px var(--shadow-primary);
+        }
+        
+        pre {
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 12px;
+            color: var(--accent-color);
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
         }
     </style>
 </head>
 <body>
+    <div class="debug-header">
+        <img src="./img/spaceship-logo.svg" alt="Game Logo" class="logo">
+        <h1>🔧 Stellar Combat Debug</h1>
+    </div>
+    
     <div class="debug-info">
-        <h1>🔧 Server Debug Page</h1>
         <p class="success">✅ If you can see this page, the server is working!</p>
         <p><strong>Server Status:</strong> <span id="server-status">Running</span></p>
         <p><strong>Current URL:</strong> <span id="current-url"></span></p>
         <p><strong>Time:</strong> <span id="current-time"></span></p>
         
-        <h3>Quick Tests:</h3>
+        <h3 style="color: var(--primary-color); margin: 20px 0 15px 0;">Quick Tests:</h3>
         <button onclick="testHealth()">Test Health Endpoint</button>
         <button onclick="testMainPage()">Test Main Page</button>
         <button onclick="goToMainGame()">Go to Main Game</button>

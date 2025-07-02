@@ -22,10 +22,13 @@ const frontEndPlayers = {};
 const frontEndProjectiles = {};
 
 socket.on('updatePlayers', (backendPlayers) => {
+  console.log('Received updatePlayers:', backendPlayers);
+  
   for (const id in backendPlayers) {
     const backendPlayer = backendPlayers[id];
 
     if (!frontEndPlayers[id]) {
+      console.log('Creating new frontend player:', id, backendPlayer.username);
       frontEndPlayers[id] = new Player({
         x: backendPlayer.x,
         y: backendPlayer.y,
@@ -98,8 +101,9 @@ socket.on('updatePlayers', (backendPlayers) => {
 
   for (const id in frontEndPlayers) {
     if (!backendPlayers[id]) {
+      console.log('Removing frontend player:', id, frontEndPlayers[id].username);
       const divToDelete = document.querySelector(`div[data-id="${id}"]`);
-      divToDelete.remove();
+      if (divToDelete) divToDelete.remove();
       delete frontEndPlayers[id];
       if (id === socket.id) {
         // player left the game
@@ -147,6 +151,12 @@ function animate() {
       frontEndPlayers[id].y +=
         (frontEndPlayers[id].target.y - frontEndPlayers[id].y) * 0.5;
     }
+    
+    // Update rotation for current player based on mouse position
+    if (id === socket.id && window.mouseX !== undefined && window.mouseY !== undefined) {
+      player.updateRotation(window.mouseX, window.mouseY);
+    }
+    
     player.draw();
   }
 
@@ -260,3 +270,21 @@ fetch('/me')
       gameName
     });
   });
+
+// Error handling
+socket.on('error', (error) => {
+  console.error('Socket error:', error);
+  alert('Game error: ' + error.message);
+});
+
+socket.on('gameJoined', (data) => {
+  console.log('Successfully joined game:', data);
+});
+
+socket.on('disconnect', () => {
+  console.log('Disconnected from server');
+});
+
+socket.on('connect', () => {
+  console.log('Connected to server with ID:', socket.id);
+});

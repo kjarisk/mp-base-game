@@ -184,6 +184,49 @@ class Database {
     }
   }
 
+  async getLeaderboard() {
+    if (this.usePostgres) {
+      try {
+        const result = await this.pool.query(`
+          SELECT username, high_score
+          FROM players
+          WHERE high_score > 0
+          ORDER BY high_score DESC
+          LIMIT 10
+        `);
+        return result.rows;
+      } catch (error) {
+        console.error('Database error getting leaderboard:', error);
+        return [];
+      }
+    } else {
+      // Fallback to in-memory
+      return Array.from(this.players.values())
+        .sort((a, b) => b.high_score - a.high_score);
+    }
+  }
+
+  async getActiveUsers() {
+    if (this.usePostgres) {
+      try {
+        // Get users who have logged in recently (within last hour)
+        const result = await this.pool.query(`
+          SELECT username, last_login
+          FROM players
+          WHERE last_login > NOW() - INTERVAL '1 hour'
+          ORDER BY last_login DESC
+        `);
+        return result.rows;
+      } catch (error) {
+        console.error('Database error getting active users:', error);
+        return [];
+      }
+    } else {
+      // Fallback to in-memory - return all players
+      return Array.from(this.players.values());
+    }
+  }
+
   async close() {
     if (this.usePostgres && this.pool) {
       await this.pool.end();
