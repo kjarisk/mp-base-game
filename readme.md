@@ -66,6 +66,7 @@ For detailed structure explanation, see [docs/PROJECT-STRUCTURE.md](./docs/PROJE
 - **[Deployment Guide](./docs/DEPLOYMENT.md)** - Complete deployment instructions
 - **[Linode Setup](./docs/LINODE-SETUP.md)** - Server setup steps
 - **[CI/CD Setup](./docs/CI-CD-SETUP.md)** - GitHub Actions configuration
+- **[Troubleshooting](./docs/TROUBLESHOOTING.md)** - Common issues and solutions
 
 ## Environment Configuration
 
