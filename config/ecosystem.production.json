@@ -3,7 +3,7 @@
     {
       "name": "mp-base-game",
       "script": "backend/server.js", 
-      "cwd": "/mp-base-game",
+      "cwd": "/root/mp-base-game",
       "instances": 2,
       "exec_mode": "cluster",
       "watch": false,
