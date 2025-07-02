@@ -2,7 +2,7 @@ require('dotenv').config();
 
 const config = {
   server: {
-    port: process.env.PORT || 3000,
+    port: parseInt(process.env.PORT) || 3000,
     sessionSecret: process.env.SESSION_SECRET || 'keyboard cat'
   },
   socket: {

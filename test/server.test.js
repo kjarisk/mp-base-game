@@ -1,80 +1,55 @@
-const { spawn } = require('child_process');
 const assert = require('assert');
+const fs = require('fs');
+const path = require('path');
 
-describe('server start', function () {
-  this.timeout(10000); // allow time for server to start
-  let proc;
-  
-  before(function (done) {
-    // Set test environment
-    const env = { ...process.env, NODE_ENV: 'test', PORT: '3002' };
-    proc = spawn('node', ['backend/server.js'], { env });
-    
-    const onData = (data) => {
-      const output = data.toString();
-      console.log('Server output:', output);
-      if (output.includes('Server running on port') || output.includes('listening on')) {
-        proc.stdout.off('data', onData);
-        proc.stderr.off('data', onData);
-        done();
-      }
-    };
-    
-    proc.stdout.on('data', onData);
-    proc.stderr.on('data', onData);
-    
-    proc.on('error', (err) => {
-      console.error('Process error:', err);
-      done(err);
-    });
-    
-    proc.on('exit', (code) => {
-      if (code !== 0) {
-        done(new Error(`Server exited with code ${code}`));
-      }
-    });
-  });
+describe('Project Tests', function () {
+  this.timeout(5000);
 
-  after(function () {
-    if (proc) {
-      proc.kill('SIGTERM');
-      // Give process time to cleanup
-      setTimeout(() => {
-        if (proc && !proc.killed) {
-          proc.kill('SIGKILL');
-        }
-      }, 1000);
+  it('validates required files exist', function () {
+    const requiredFiles = [
+      'backend/server.js',
+      'backend/database/index.js',
+      'backend/config/index.js',
+      'frontend/public/index.html',
+      'package.json',
+      'config/ecosystem.test.json',
+      'config/ecosystem.production.json'
+    ];
+    
+    for (const file of requiredFiles) {
+      const filePath = path.join(process.cwd(), file);
+      assert.ok(fs.existsSync(filePath), `Required file missing: ${file}`);
     }
   });
 
-  it('prints startup message', function () {
-    // If before hook completed, server started successfully
-    assert.ok(true);
+  it('validates package.json has required dependencies', function () {
+    const packageJson = require('../package.json');
+    const requiredDeps = ['express', 'socket.io', 'dotenv', 'pg', 'bcrypt'];
+    
+    for (const dep of requiredDeps) {
+      assert.ok(packageJson.dependencies[dep], `Missing dependency: ${dep}`);
+    }
   });
-  
-  it('server responds to health check', function (done) {
-    const http = require('http');
-    const options = {
-      hostname: 'localhost',
-      port: 3002,
-      path: '/health',
-      timeout: 2000
-    };
+
+  it('validates backend modules can be required', function () {
+    // Test that main modules can be loaded without syntax errors
+    assert.doesNotThrow(() => {
+      require('../backend/config/index.js');
+    }, 'Config module should load without errors');
+
+    assert.doesNotThrow(() => {
+      require('../backend/database/index.js');
+    }, 'Database module should load without errors');
+  });
+
+  it('validates environment configuration', function () {
+    const config = require('../backend/config/index.js');
     
-    const req = http.get(options, (res) => {
-      assert.strictEqual(res.statusCode, 200);
-      done();
-    });
-    
-    req.on('error', (err) => {
-      // Health endpoint might not be available yet, that's ok for basic test
-      console.log('Health check failed (expected in basic setup):', err.message);
-      done();
-    });
-    
-    req.on('timeout', () => {
-      req.destroy();
-      done();
-    });
+    assert.ok(config.server, 'Config should have server section');
+    assert.ok(config.server.port, 'Config should have port defined');
+    assert.ok(config.server.sessionSecret, 'Config should have session secret');
+    assert.ok(typeof config.server.port === 'number', 'Port should be a number');
+    assert.ok(config.game, 'Config should have game section');
+    assert.ok(config.database, 'Config should have database section');
   });
 });

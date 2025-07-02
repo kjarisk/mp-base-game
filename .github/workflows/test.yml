@@ -34,11 +34,14 @@ jobs:
         run: |
           # Test that server can start without errors
           timeout 10 npm start &
+          SERVER_PID=$!
           sleep 5
           if curl -f http://localhost:3000/health; then
             echo "✅ Server started successfully"
+            kill $SERVER_PID 2>/dev/null || true
           else
             echo "❌ Server failed to start"
+            kill $SERVER_PID 2>/dev/null || true
             exit 1
           fi
 
