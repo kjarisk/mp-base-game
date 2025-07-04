@@ -1,0 +1,23 @@
+{
+  "watch": [
+    "backend/",
+    "shared/",
+    ".env",
+    ".env.development"
+  ],
+  "ext": "js,json,env",
+  "ignore": [
+    "node_modules/",
+    "frontend/",
+    "test/",
+    "logs/",
+    "backups/"
+  ],
+  "delay": "1000",
+  "env": {
+    "NODE_ENV": "development"
+  },
+  "events": {
+    "restart": "echo 🔄 Backend restarted due to file changes..."
+  }
+}

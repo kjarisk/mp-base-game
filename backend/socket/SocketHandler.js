@@ -40,6 +40,11 @@ class SocketHandler {
       });
     });
 
+    // Update projectiles for all games every 16ms (~60fps)
+    setInterval(() => {
+      this.updateAllProjectiles();
+    }, 1000 / 60);
+
   }
 
   async handleGameInit(socket, data) {
@@ -207,12 +212,20 @@ class SocketHandler {
       
       for (const [gameId, game] of Object.entries(games)) {
         const oldProjectileCount = Object.keys(game.projectiles).length;
+        
         this.gameService.updateProjectiles(gameId);
+        
         const newProjectileCount = Object.keys(game.projectiles).length;
 
-        // Only emit if projectiles changed
-        if (oldProjectileCount !== newProjectileCount || newProjectileCount > 0) {
+        // Always emit updated players when projectiles are processed (for scoring/respawning)
+        this.io.to(gameId).emit('updatePlayers', game.players);
+
+        // Always emit projectiles if there are any active ones
+        if (newProjectileCount > 0) {
           this.io.to(gameId).emit('updateProjectiles', game.projectiles);
+        } else if (oldProjectileCount > 0 && newProjectileCount === 0) {
+          // Send empty object to clear all projectiles on frontend
+          this.io.to(gameId).emit('updateProjectiles', {});
         }
       }
     } catch (error) {

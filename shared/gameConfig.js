@@ -7,7 +7,7 @@ module.exports = {
   MAX_PLAYERS_TOTAL: 100,
   
   // Game mechanics
-  PROJECTILE_SPEED: 5,
+  PROJECTILE_SPEED: 300, // pixels per second
   PLAYER_SPEED: 3,
   ENEMY_SPAWN_RATE: 1000, // milliseconds
   

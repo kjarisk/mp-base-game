@@ -14,18 +14,26 @@ A modern, scalable multiplayer game starter with robust backend architecture, Po
 ## Quick Start
 
 ### Development
+
 ```bash
 # Install dependencies
 npm install
 
-# Start development server (uses in-memory storage by default)
+# Start development (auto-restart on code changes)
 npm run dev
 
-# Or start with PostgreSQL (requires DATABASE_URL in .env)
-npm start
+# Start both backend and frontend servers
+npm run dev:full
+
+# Backend only: http://localhost:3000
+# Frontend dev server: http://localhost:8080
 ```
 
-Visit `http://localhost:3000` to access the game lobby.
+### Production
+```bash
+# Start production mode
+npm start
+```
 
 ### Production Deployment
 See [DEPLOYMENT.md](./DEPLOYMENT.md) for complete deployment instructions.

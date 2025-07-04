@@ -1,25 +1,15 @@
 {
   "name": "multiplayer-game-starter",
   "version": "1.0.0",
-  "description": "A multiplayer game starter with modern backend architecture",
+  "description": "A simple multiplayer game starter",
   "main": "backend/server.js",
   "scripts": {
     "start": "node backend/server.js",
-    "dev": "NODE_ENV=development node backend/server.js",
+    "dev": "NODE_ENV=development nodemon backend/server.js",
+    "dev:full": "concurrently \"npm run dev\" \"npm run dev:frontend\"",
+    "dev:frontend": "npx http-server frontend/public -p 8080 -c-1 --cors",
     "test": "NODE_ENV=test mocha test/**/*.test.js",
-    "test:watch": "NODE_ENV=test mocha test/**/*.test.js --watch",
-    "migrate": "chmod +x scripts/migrate.sh && ./scripts/migrate.sh",
-    "migrate:test": "chmod +x scripts/migrate.sh && ./scripts/migrate.sh test",
-    "migrate:prod": "chmod +x scripts/migrate.sh && ./scripts/migrate.sh production",
-    "deploy:test": "pm2 start config/ecosystem.test.json",
-    "deploy:prod": "pm2 start config/ecosystem.production.json",
-    "logs": "pm2 logs",
-    "health": "curl -f http://localhost:3000/health && curl -f http://localhost:3001/health || echo 'One or both servers not responding'",
-    "server:fix": "chmod +x scripts/server-fix.sh && ./scripts/server-fix.sh",
-    "server:status": "chmod +x scripts/server-fix.sh && ./scripts/server-fix.sh status",
-    "backup:init": "chmod +x scripts/backup-manager.sh && ./scripts/backup-manager.sh init",
-    "backup:create": "chmod +x scripts/backup-manager.sh && ./scripts/backup-manager.sh backup",
-    "backup:list": "chmod +x scripts/backup-manager.sh && ./scripts/backup-manager.sh list"
+    "migrate": "chmod +x scripts/migrate.sh && ./scripts/migrate.sh"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
@@ -27,18 +17,21 @@
     "express": "^4.21.2",
     "express-session": "^1.18.1",
     "pg": "^8.16.3",
-    "phaser": "^3.90.0",
     "socket.io": "^4.8.1"
   },
   "devDependencies": {
-    "mocha": "^11.5.0"
+    "concurrently": "^9.2.0",
+    "http-server": "^14.1.1",
+    "mocha": "^11.5.0",
+    "nodemon": "^3.1.10"
   },
   "keywords": [
     "multiplayer",
     "game",
     "websockets",
-    "express",
-    "node.js"
+    "real-time",
+    "canvas",
+    "javascript"
   ],
   "author": "Your Name",
   "license": "MIT"

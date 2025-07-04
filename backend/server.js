@@ -20,7 +20,13 @@ const questRoutes = require('./routes/quests');
 async function startServer() {
   const app = express();
   const server = createServer(app);
-  const io = new Server(server, config.socket);
+  const io = new Server(server, {
+    ...config.socket,
+    cors: {
+      origin: process.env.NODE_ENV === 'development' ? ['http://localhost:8080', 'http://localhost:3000'] : false,
+      credentials: true
+    }
+  });
 
   // Initialize database
   try {
@@ -32,6 +38,22 @@ async function startServer() {
   }
 
   const port = config.server.port;
+
+  // CORS middleware for development
+  if (process.env.NODE_ENV === 'development') {
+    app.use((req, res, next) => {
+      res.header('Access-Control-Allow-Origin', 'http://localhost:8080');
+      res.header('Access-Control-Allow-Credentials', 'true');
+      res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+      res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+      
+      if (req.method === 'OPTIONS') {
+        res.sendStatus(200);
+      } else {
+        next();
+      }
+    });
+  }
 
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
@@ -89,6 +111,8 @@ async function startServer() {
 
   server.listen(port, () => {
     logger.info(`Server running on port ${port}`);
+    logger.info(`Development mode: ${process.env.NODE_ENV === 'development'}`);
+    logger.info(`Environment: ${process.env.NODE_ENV || 'production'}`);
   });
 
 // Graceful shutdown

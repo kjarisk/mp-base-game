@@ -29,11 +29,11 @@ class GameService {
 
     this.games[gameId] = game;
 
-    // Start per-game projectile update timer
-    const interval = setInterval(() => {
-      this.updateProjectiles(gameId);
-    }, 1000 / config.game.tickRate);
-    this.projectileTimers[gameId] = interval;
+    // Don't start a per-game projectile update timer here - the SocketHandler manages this globally
+    // const interval = setInterval(() => {
+    //   this.updateProjectiles(gameId);
+    // }, 1000 / config.game.tickRate);
+    // this.projectileTimers[gameId] = interval;
 
     logger.info(`Game created: ${gameName} by ${ownerUsername}`);
     
@@ -103,8 +103,9 @@ class GameService {
 
     // Remove empty games (except if owner is still there)
     if (Object.keys(game.players).length === 0) {
-      clearInterval(this.projectileTimers[gameId]);
-      delete this.projectileTimers[gameId];
+      // No need to clear interval since we're not using per-game timers
+      // clearInterval(this.projectileTimers[gameId]);
+      // delete this.projectileTimers[gameId];
       delete this.games[gameId];
       logger.info(`Game ${game.name} removed (empty)`);
     }
@@ -119,21 +120,31 @@ class GameService {
     }
 
     const player = game.players[socketId];
-    const { left, right, up, down, sequenceNumber } = movementData;
+    const { keycode, sequenceNumber } = movementData;
 
     // Validate sequence number to prevent replay attacks
     if (sequenceNumber <= player.sequenceNumber) {
       return player; // Ignore old updates
     }
 
-    // Calculate new position
+    // Calculate new position based on keycode
     let newX = player.x;
     let newY = player.y;
 
-    if (left) newX -= config.game.playerSpeed;
-    if (right) newX += config.game.playerSpeed;
-    if (up) newY -= config.game.playerSpeed;
-    if (down) newY += config.game.playerSpeed;
+    switch (keycode) {
+      case 'KeyW':
+        newY -= config.game.playerSpeed;
+        break;
+      case 'KeyS':
+        newY += config.game.playerSpeed;
+        break;
+      case 'KeyA':
+        newX -= config.game.playerSpeed;
+        break;
+      case 'KeyD':
+        newX += config.game.playerSpeed;
+        break;
+    }
 
     // Boundary checking
     const radius = config.game.playerRadius;
@@ -166,7 +177,14 @@ class GameService {
         y: Math.sin(projectileData.angle) * speed
       };
     } else if (projectileData.velocity) {
-      velocity = projectileData.velocity;
+      // Scale provided velocity to match our speed
+      const currentSpeed = Math.sqrt(projectileData.velocity.x * projectileData.velocity.x + projectileData.velocity.y * projectileData.velocity.y);
+      const targetSpeed = config.game.projectileSpeed;
+      const scale = targetSpeed / currentSpeed;
+      velocity = {
+        x: projectileData.velocity.x * scale,
+        y: projectileData.velocity.y * scale
+      };
     } else {
       throw new Error('Either angle or velocity must be provided');
     }
@@ -194,29 +212,71 @@ class GameService {
     const projectilesToRemove = [];
 
     for (const [id, projectile] of Object.entries(game.projectiles)) {
-      // Remove old projectiles
+      // Remove old projectiles (5 seconds lifetime)
       if (now - projectile.createdAt > 5000) {
         projectilesToRemove.push(id);
         continue;
       }
 
-      // Update position
-      projectile.x += projectile.velocity.x;
-      projectile.y += projectile.velocity.y;
+      // Update position with 60fps timing
+      const deltaTime = 1 / 60; // 60fps
+      projectile.x += projectile.velocity.x * deltaTime;
+      projectile.y += projectile.velocity.y * deltaTime;
 
-      // Check boundaries - use canvas dimensions or default
-      const player = game.players[projectile.playerId];
-      const maxX = player?.canvas?.width || config.game.canvasDefaults.width;
-      const maxY = player?.canvas?.height || config.game.canvasDefaults.height;
+      // Check collision with players
+      for (const [playerId, player] of Object.entries(game.players)) {
+        // Don't let players hit themselves
+        if (playerId === projectile.playerId) continue;
+
+        const distance = Math.sqrt(
+          Math.pow(projectile.x - player.x, 2) + 
+          Math.pow(projectile.y - player.y, 2)
+        );
+
+        const collisionDistance = config.game.projectileRadius + config.game.playerRadius;
+        
+        if (distance < collisionDistance) {
+          // Collision detected!
+          logger.info(`Player ${player.username} hit by ${game.players[projectile.playerId]?.username || 'unknown'}`);
+          
+          // Award point to shooter
+          const shooter = game.players[projectile.playerId];
+          if (shooter) {
+            shooter.score = (shooter.score || 0) + 1;
+            logger.info(`${shooter.username} scored! New score: ${shooter.score}`);
+          }
+
+          // Respawn hit player at random location instead of removing them
+          player.x = player.canvas.width * Math.random();
+          player.y = player.canvas.height * Math.random();
+          logger.info(`Player ${player.username} respawned at (${player.x}, ${player.y})`);
+
+          // Remove the projectile
+          projectilesToRemove.push(id);
+          break; // Exit player loop since projectile hit someone
+        }
+      }
+
+      // Check boundaries - use actual canvas dimensions from any player in the game
+      const anyPlayer = Object.values(game.players)[0];
+      const maxX = anyPlayer?.canvas?.width || 1024;
+      const maxY = anyPlayer?.canvas?.height || 576;
       
       if (projectile.x < 0 || projectile.x > maxX || 
           projectile.y < 0 || projectile.y > maxY) {
         projectilesToRemove.push(id);
+        logger.debug(`Projectile ${id} removed - out of bounds: (${projectile.x}, ${projectile.y})`);
       }
     }
 
     // Remove expired/out-of-bounds projectiles
-    projectilesToRemove.forEach(id => delete game.projectiles[id]);
+    projectilesToRemove.forEach(id => {
+      delete game.projectiles[id];
+    });
+    
+    if (projectilesToRemove.length > 0) {
+      logger.debug(`Removed ${projectilesToRemove.length} projectiles from game ${gameId}`);
+    }
   }
 
   getGamesList() {

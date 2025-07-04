@@ -1,10 +1,15 @@
 // Sci-fi themed guest names shared with the backend
 
 async function postJSON(url, data) {
-  const res = await fetch(url, {
+  // Use development configuration for API calls
+  const baseUrl = window.APP_CONFIG?.API_BASE_URL || '';
+  const fullUrl = baseUrl + url;
+  
+  const res = await fetch(fullUrl, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data)
+    body: JSON.stringify(data),
+    credentials: 'include' // Important for CORS in development
   });
   if (!res.ok) {
     let errorMessage = 'Request failed';
@@ -70,7 +75,10 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
 document.getElementById('guestBtn').addEventListener('click', async () => {
   try {
     // Get available guest name from server
-    const response = await fetch('/api/guest-name');
+    const baseUrl = window.APP_CONFIG?.API_BASE_URL || '';
+    const response = await fetch(baseUrl + '/api/guest-name', {
+      credentials: 'include' // Important for CORS in development
+    });
     const data = await response.json();
     
     if (data.success) {

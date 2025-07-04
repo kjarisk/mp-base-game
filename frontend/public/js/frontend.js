@@ -1,7 +1,9 @@
 const canvas = document.querySelector('canvas');
 const c = canvas.getContext('2d');
 
-const socket = io();
+// Use development configuration for socket connection
+const socketUrl = window.APP_CONFIG?.SOCKET_URL || '';
+const socket = io(socketUrl);
 const params = new URLSearchParams(window.location.search);
 const gameId = params.get('gameId');
 const createGame = params.get('create') === '1';
@@ -116,23 +118,30 @@ socket.on('updatePlayers', (backendPlayers) => {
 });
 
 socket.on('updateProjectiles', (backEndProjectiles) => {
+  console.log('Received projectiles update:', Object.keys(backEndProjectiles).length, 'projectiles');
+  
   for (const id in backEndProjectiles) {
     const backEndProjectile = backEndProjectiles[id];
     if (!frontEndProjectiles[id]) {
+      console.log('Creating new projectile:', id, 'at', backEndProjectile.x, backEndProjectile.y);
       frontEndProjectiles[id] = new Projectile({
         x: backEndProjectile.x,
         y: backEndProjectile.y,
         velocity: backEndProjectile.velocity,
         radius: 5,
-        color: frontEndPlayers[backEndProjectile.playerId]?.color
+        color: frontEndPlayers[backEndProjectile.playerId]?.color || 'white'
       });
     } else {
-      frontEndProjectiles[id].x += backEndProjectiles[id].velocity.x;
-      frontEndProjectiles[id].y += backEndProjectiles[id].velocity.y;
+      // Update position from backend (don't calculate movement on frontend)
+      frontEndProjectiles[id].x = backEndProjectile.x;
+      frontEndProjectiles[id].y = backEndProjectile.y;
     }
   }
+  
+  // Remove projectiles that no longer exist on backend
   for (const frontEndProjectileId in frontEndProjectiles) {
     if (!backEndProjectiles[frontEndProjectileId]) {
+      console.log('Removing projectile:', frontEndProjectileId);
       delete frontEndProjectiles[frontEndProjectileId];
     }
   }
