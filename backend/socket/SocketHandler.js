@@ -119,10 +119,11 @@ class SocketHandler {
         movementData
       );
 
-      // Broadcast position update to other players in the game
-      socket.to(gameId).emit('updatePlayers', {
-        [socket.id]: updatedPlayer
-      });
+      // Broadcast updated player list to all players in the game
+      const game = this.gameService.getGame(gameId);
+      if (game) {
+        this.io.to(gameId).emit('updatePlayers', game.players);
+      }
 
     } catch (error) {
       logger.error('Error in player movement', { 
@@ -145,10 +146,11 @@ class SocketHandler {
         projectileData
       );
 
-      // Broadcast new projectile to all players in the game
-      this.io.to(gameId).emit('updateProjectiles', {
-        [projectile.id]: projectile
-      });
+      // Broadcast updated projectile list to all players in the game
+      const game = this.gameService.getGame(gameId);
+      if (game) {
+        this.io.to(gameId).emit('updateProjectiles', game.projectiles);
+      }
 
     } catch (error) {
       logger.error('Error creating projectile', { 
