@@ -190,7 +190,8 @@ const keys = {
 
 const SPEED = 5;
 const playerInputs = [];
-let sequenceNumber;
+// Start the input sequence numbering at zero so the server and client stay in sync
+let sequenceNumber = 0;
 setInterval(() => {
   if (keys.w.pressed) {
     sequenceNumber++;
