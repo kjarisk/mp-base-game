@@ -53,14 +53,14 @@ start_applications() {
     mkdir -p logs
     
     # Start test environment
-    echo -e "${BLUE}Starting test environment (port 3000)...${NC}"
+    echo -e "${BLUE}Starting test environment (port 3001)...${NC}"
     pm2 start config/ecosystem.test.json
     
     # Wait a moment for startup
     sleep 3
     
     # Start production environment
-    echo -e "${BLUE}Starting production environment (port 3001)...${NC}"
+    echo -e "${BLUE}Starting production environment (port 3000)...${NC}"
     pm2 start config/ecosystem.production.json
     
     # Save PM2 configuration
@@ -74,16 +74,16 @@ test_endpoints() {
     echo -e "${YELLOW}Testing application endpoints...${NC}"
     
     # Test test environment
-    echo -e "${BLUE}Testing test environment (http://localhost:3000)...${NC}"
-    if curl -s http://localhost:3000/health > /dev/null; then
+    echo -e "${BLUE}Testing test environment (http://localhost:3001)...${NC}"
+    if curl -s http://localhost:3001/health > /dev/null; then
         echo -e "${GREEN}✅ Test environment responding${NC}"
     else
         echo -e "${RED}❌ Test environment not responding${NC}"
     fi
     
     # Test production environment
-    echo -e "${BLUE}Testing production environment (http://localhost:3001)...${NC}"
-    if curl -s http://localhost:3001/health > /dev/null; then
+    echo -e "${BLUE}Testing production environment (http://localhost:3000)...${NC}"
+    if curl -s http://localhost:3000/health > /dev/null; then
         echo -e "${GREEN}✅ Production environment responding${NC}"
     else
         echo -e "${RED}❌ Production environment not responding${NC}"
@@ -115,21 +115,21 @@ fix_nginx() {
 check_ports() {
     echo -e "${YELLOW}Checking for port conflicts...${NC}"
     
-    local test_port=$(netstat -tlnp 2>/dev/null | grep :3000 | wc -l)
-    local prod_port=$(netstat -tlnp 2>/dev/null | grep :3001 | wc -l)
+    local test_port=$(netstat -tlnp 2>/dev/null | grep :3001 | wc -l)
+    local prod_port=$(netstat -tlnp 2>/dev/null | grep :3000 | wc -l)
     
     if [ $test_port -gt 1 ]; then
-        echo -e "${RED}❌ Multiple processes on port 3000${NC}"
-        netstat -tlnp | grep :3000
-    else
-        echo -e "${GREEN}✅ Port 3000 clean${NC}"
-    fi
-    
-    if [ $prod_port -gt 1 ]; then
         echo -e "${RED}❌ Multiple processes on port 3001${NC}"
         netstat -tlnp | grep :3001
     else
         echo -e "${GREEN}✅ Port 3001 clean${NC}"
+    fi
+    
+    if [ $prod_port -gt 1 ]; then
+        echo -e "${RED}❌ Multiple processes on port 3000${NC}"
+        netstat -tlnp | grep :3000
+    else
+        echo -e "${GREEN}✅ Port 3000 clean${NC}"
     fi
 }
 
@@ -143,12 +143,12 @@ show_status() {
     
     echo ""
     echo -e "${YELLOW}Port Usage:${NC}"
-    netstat -tlnp | grep -E ":(3000|3001)" || echo "No processes on ports 3000 or 3001"
+    netstat -tlnp | grep -E ":(3001|3000)" || echo "No processes on ports 3001 or 3000"
     
     echo ""
     echo -e "${YELLOW}Application Health:${NC}"
-    curl -s http://localhost:3000/health 2>/dev/null && echo "Test environment: OK" || echo "Test environment: ERROR"
-    curl -s http://localhost:3001/health 2>/dev/null && echo "Production environment: OK" || echo "Production environment: ERROR"
+    curl -s http://localhost:3001/health 2>/dev/null && echo "Test environment: OK" || echo "Test environment: ERROR"
+    curl -s http://localhost:3000/health 2>/dev/null && echo "Production environment: OK" || echo "Production environment: ERROR"
 }
 
 # Initialize backup system
