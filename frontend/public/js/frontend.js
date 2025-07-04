@@ -7,12 +7,12 @@ const gameId = params.get('gameId');
 const createGame = params.get('create') === '1';
 const gameName = params.get('name');
 
-const devicePixelRation = window.devicePixelRatio || 1;
+const devicePixelRatio = window.devicePixelRatio || 1;
 
-canvas.width = 1024 * devicePixelRation;
-canvas.height = 576 * devicePixelRation;
+canvas.width = 1024 * devicePixelRatio;
+canvas.height = 576 * devicePixelRatio;
 
-c.scale(devicePixelRation, devicePixelRation);
+c.scale(devicePixelRatio, devicePixelRatio);
 
 const x = canvas.width / 2;
 const y = canvas.height / 2;
