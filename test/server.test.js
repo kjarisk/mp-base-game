@@ -52,4 +52,26 @@ describe('Project Tests', function () {
     assert.ok(config.game, 'Config should have game section');
     assert.ok(config.database, 'Config should have database section');
   });
+
+  it('uses config projectile speed when creating projectiles', function () {
+    const GameService = require('../backend/services/GameService');
+    const config = require('../backend/config');
+    const service = new GameService();
+
+    const gameId = 'game1';
+    const socketId = 'socket1';
+    service.createGame(gameId, 'Test Game', 'owner');
+    service.addPlayerToGame(gameId, socketId, {
+      username: 'owner',
+      width: 100,
+      height: 100
+    });
+
+    const projectile = service.createProjectile(gameId, socketId, { angle: 0 });
+    assert.strictEqual(
+      projectile.velocity.x,
+      config.game.projectileSpeed,
+      'Projectile should use configured speed'
+    );
+  });
 });

@@ -150,7 +150,7 @@ class GameService {
     // Calculate velocity from angle if angle is provided
     let velocity;
     if (projectileData.angle !== undefined) {
-      const speed = 5; // projectile speed
+      const speed = config.game.projectileSpeed;
       velocity = {
         x: Math.cos(projectileData.angle) * speed,
         y: Math.sin(projectileData.angle) * speed
