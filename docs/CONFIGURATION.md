@@ -91,6 +91,15 @@ fetch('/api/game/config')
   });
 ```
 
+Store these settings in a global object so other scripts can reference them:
+
+```javascript
+window.GAME_CONFIG = {};
+fetch('/api/game/config')
+  .then(res => res.json())
+  .then(cfg => { window.GAME_CONFIG = cfg; });
+```
+
 ## Migration Notes
 
 **What was moved OUT of .env files:**

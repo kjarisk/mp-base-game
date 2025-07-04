@@ -21,6 +21,9 @@ const y = canvas.height / 2;
 const frontEndPlayers = {};
 const frontEndProjectiles = {};
 
+// Global game configuration populated from the server
+window.GAME_CONFIG = {};
+
 socket.on('updatePlayers', (backendPlayers) => {
   console.log('Received updatePlayers:', backendPlayers);
   
@@ -188,36 +191,47 @@ const keys = {
   }
 };
 
-const SPEED = 5;
+let playerSpeed = 5;
 const playerInputs = [];
 // Start the input sequence numbering at zero so the server and client stay in sync
 let sequenceNumber = 0;
-setInterval(() => {
-  if (keys.w.pressed) {
-    sequenceNumber++;
-    playerInputs.push({ sequenceNumber, dx: 0, dy: -SPEED });
-    frontEndPlayers[socket.id].y -= SPEED;
-    socket.emit('keydown', { keycode: 'KeyW', sequenceNumber });
-  }
-  if (keys.a.pressed) {
-    sequenceNumber++;
-    playerInputs.push({ sequenceNumber, dx: -SPEED, dy: 0 });
-    frontEndPlayers[socket.id].x -= SPEED;
-    socket.emit('keydown', { keycode: 'KeyA', sequenceNumber });
-  }
-  if (keys.s.pressed) {
-    sequenceNumber++;
-    playerInputs.push({ sequenceNumber, dx: 0, dy: SPEED });
-    frontEndPlayers[socket.id].y += SPEED;
-    socket.emit('keydown', { keycode: 'KeyS', sequenceNumber });
-  }
-  if (keys.d.pressed) {
-    sequenceNumber++;
-    playerInputs.push({ sequenceNumber, dx: SPEED, dy: 0 });
-    frontEndPlayers[socket.id].x += SPEED;
-    socket.emit('keydown', { keycode: 'KeyD', sequenceNumber });
-  }
-}, 15);
+function startInputLoop() {
+  setInterval(() => {
+    if (keys.w.pressed) {
+      sequenceNumber++;
+      playerInputs.push({ sequenceNumber, dx: 0, dy: -playerSpeed });
+      frontEndPlayers[socket.id].y -= playerSpeed;
+      socket.emit('keydown', { keycode: 'KeyW', sequenceNumber });
+    }
+    if (keys.a.pressed) {
+      sequenceNumber++;
+      playerInputs.push({ sequenceNumber, dx: -playerSpeed, dy: 0 });
+      frontEndPlayers[socket.id].x -= playerSpeed;
+      socket.emit('keydown', { keycode: 'KeyA', sequenceNumber });
+    }
+    if (keys.s.pressed) {
+      sequenceNumber++;
+      playerInputs.push({ sequenceNumber, dx: 0, dy: playerSpeed });
+      frontEndPlayers[socket.id].y += playerSpeed;
+      socket.emit('keydown', { keycode: 'KeyS', sequenceNumber });
+    }
+    if (keys.d.pressed) {
+      sequenceNumber++;
+      playerInputs.push({ sequenceNumber, dx: playerSpeed, dy: 0 });
+      frontEndPlayers[socket.id].x += playerSpeed;
+      socket.emit('keydown', { keycode: 'KeyD', sequenceNumber });
+    }
+  }, 15);
+}
+
+// Load game configuration before starting the input loop
+fetch('/api/game/config')
+  .then(res => res.json())
+  .then(cfg => {
+    window.GAME_CONFIG = cfg;
+    playerSpeed = GAME_CONFIG.playerSpeed || playerSpeed;
+    startInputLoop();
+  });
 
 window.addEventListener('keydown', (e) => {
   if (!frontEndPlayers[socket.id]) return;
