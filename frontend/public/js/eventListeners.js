@@ -6,35 +6,37 @@ window.addEventListener('mousemove', (event) => {
   const { top, left } = canvas.getBoundingClientRect();
   window.mouseX = event.clientX - left;
   window.mouseY = event.clientY - top;
-  
-  // Update player rotation if player exists
-  if (frontEndPlayers[socket.id]) {
-    frontEndPlayers[socket.id].updateRotation(window.mouseX, window.mouseY);
-  }
 });
 
 window.addEventListener('click', (event) => {
-  const canvas = document.querySelector('canvas');
-  if (!canvas) return; // Safety check for canvas
+  // Check if game controller exists and is initialized
+  if (!window.gameController || !window.gameController.gameState) {
+    console.log('Game not initialized yet');
+    return;
+  }
   
-  // Safety check for player existence
-  if (!frontEndPlayers[socket.id]) {
+  const canvas = document.querySelector('canvas');
+  if (!canvas) return;
+  
+  const gameState = window.gameController.gameState;
+  const currentPlayer = gameState.getCurrentPlayer();
+  
+  if (!currentPlayer) {
     console.log('Player not found for shooting');
     return;
   }
   
   const { top, left } = canvas.getBoundingClientRect();
-  const player = frontEndPlayers[socket.id];
   
   // Get nose position for accurate shooting
-  const nosePos = player.getNosePosition();
+  const nosePos = currentPlayer.getNosePosition();
   
   const angle = Math.atan2(
     event.clientY - top - nosePos.y,
     event.clientX - left - nosePos.x
   );
 
-  socket.emit('shoot', {
+  window.gameController.socketManager.emit('shoot', {
     x: nosePos.x,
     y: nosePos.y,
     angle
