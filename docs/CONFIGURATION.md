@@ -42,6 +42,9 @@ module.exports = {
   // Game mechanics
   PROJECTILE_SPEED: 5,
   PLAYER_SPEED: 3,
+
+  // Timing
+  GAME_TICK_RATE: 60, // server updates per second
   
   // Game balance
   PLAYER_HEALTH: 100,
@@ -52,6 +55,10 @@ module.exports = {
   MAP_HEIGHT: 600
 };
 ```
+
+The `GAME_TICK_RATE` controls how often the server updates game state. Each game
+instance starts its own timer based on this rate (`config.game.tickRate`) to
+process projectile movement and other periodic logic.
 
 ## Why This Separation?
 

@@ -40,10 +40,6 @@ class SocketHandler {
       });
     });
 
-    // Update projectiles for all games every 16ms (~60fps)
-    setInterval(() => {
-      this.updateAllProjectiles();
-    }, 16);
   }
 
   async handleGameInit(socket, data) {

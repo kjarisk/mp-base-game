@@ -1,5 +1,6 @@
 require('dotenv').config();
 const gameConfig = require('../../shared/gameConfig');
+const { GAME_CONSTANTS } = require('../../shared/constants');
 
 const config = {
   server: {
@@ -16,6 +17,7 @@ const config = {
     projectileRadius: 5,
     maxPlayersPerGame: gameConfig.MAX_PLAYERS_PER_GAME,
     projectileSpeed: gameConfig.PROJECTILE_SPEED,
+    tickRate: GAME_CONSTANTS.TICK_RATE,
     canvasDefaults: {
       width: gameConfig.MAP_WIDTH,
       height: gameConfig.MAP_HEIGHT
