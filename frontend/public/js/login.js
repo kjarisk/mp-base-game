@@ -1,5 +1,4 @@
 // Sci-fi themed guest names shared with the backend
-import GUEST_NAMES from '../../../shared/guestNames.js';
 
 async function postJSON(url, data) {
   const res = await fetch(url, {
