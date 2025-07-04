@@ -5,6 +5,7 @@ class GameService {
   constructor() {
     this.games = {};
     this.projectileId = 0;
+    this.projectileTimers = {};
   }
 
   createGame(gameId, gameName, ownerUsername) {
@@ -27,6 +28,13 @@ class GameService {
     };
 
     this.games[gameId] = game;
+
+    // Start per-game projectile update timer
+    const interval = setInterval(() => {
+      this.updateProjectiles(gameId);
+    }, 1000 / config.game.tickRate);
+    this.projectileTimers[gameId] = interval;
+
     logger.info(`Game created: ${gameName} by ${ownerUsername}`);
     
     return game;
@@ -95,6 +103,8 @@ class GameService {
 
     // Remove empty games (except if owner is still there)
     if (Object.keys(game.players).length === 0) {
+      clearInterval(this.projectileTimers[gameId]);
+      delete this.projectileTimers[gameId];
       delete this.games[gameId];
       logger.info(`Game ${game.name} removed (empty)`);
     }
