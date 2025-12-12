@@ -7,6 +7,8 @@ class PlayerManager {
   }
 
   createPlayer(socketId, playerData) {
+    logger.info(`🎮 Creating player: socketId=${socketId}, username=${playerData.username}`);
+    
     // Create unique display name if username already exists would be handled by GameService
     const player = {
       id: socketId,
@@ -24,6 +26,7 @@ class PlayerManager {
       joinedAt: new Date().toISOString()
     };
 
+    logger.info(`🎮 Player created: ${player.username} at (${Math.round(player.x)}, ${Math.round(player.y)})`);
     return player;
   }
 
@@ -71,9 +74,15 @@ class PlayerManager {
     let displayName = username;
     let counter = 2;
     
+    logger.info(`🎮 Ensuring unique username for: ${username}, existing usernames: [${existingUsernames.join(', ')}]`);
+    
     while (existingUsernames.includes(displayName)) {
       displayName = `${username}_${counter}`;
       counter++;
+    }
+    
+    if (displayName !== username) {
+      logger.info(`🎮 Username changed from ${username} to ${displayName} to ensure uniqueness`);
     }
     
     return displayName;

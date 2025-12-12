@@ -29,6 +29,6 @@ module.exports = {
   RESPAWN_TIME: 3000, // milliseconds
   
   // Socket.IO settings
-  SOCKET_PING_TIMEOUT: 5000,
-  SOCKET_PING_INTERVAL: 2000,
+  SOCKET_PING_TIMEOUT: 60000, // 60 seconds - increased from 5 seconds
+  SOCKET_PING_INTERVAL: 25000, // 25 seconds - increased from 2 seconds
 };

@@ -51,6 +51,8 @@ class SocketHandler {
     try {
       const { width, height, username, gameId, create, gameName } = data;
 
+      logger.info(`🎮 Game init request from socket ${socket.id}: username=${username}, gameId=${gameId}, create=${create}`);
+
       if (!username) {
         socket.emit('error', { message: 'Username is required' });
         return;
@@ -59,6 +61,7 @@ class SocketHandler {
       // Create game if requested
       if (create && !this.gameService.getGame(gameId)) {
         this.gameService.createGame(gameId, gameName || 'Unnamed game', username);
+        logger.info(`🎮 Game created: ${gameId} by ${username}`);
       }
 
       // Check if game exists
@@ -75,6 +78,8 @@ class SocketHandler {
       socket.join(gameId);
       socket.data.gameId = gameId;
       socket.data.username = username;
+
+      logger.info(`🎮 Player ${username} (${socket.id}) joining game ${gameId}`);
 
       // Add player to game
       const player = this.gameService.addPlayerToGame(gameId, socket.id, {

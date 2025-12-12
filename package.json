@@ -5,9 +5,10 @@
   "main": "backend/server.js",
   "scripts": {
     "start": "node backend/server.js",
-    "dev": "NODE_ENV=development nodemon backend/server.js",
-    "dev:full": "concurrently \"npm run dev\" \"npm run dev:frontend\"",
-    "dev:frontend": "npx http-server frontend/public -p 8080 -c-1 --cors",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "NODE_ENV=development nodemon backend/server.js",
+    "dev:frontend": "cd frontend-react && npm run dev",
+    "dev:react": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
     "test": "NODE_ENV=test mocha test/**/*.test.js",
     "migrate": "chmod +x scripts/migrate.sh && ./scripts/migrate.sh"
   },
@@ -21,7 +22,6 @@
   },
   "devDependencies": {
     "concurrently": "^9.2.0",
-    "http-server": "^14.1.1",
     "mocha": "^11.5.0",
     "nodemon": "^3.1.10"
   },

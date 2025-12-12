@@ -23,7 +23,7 @@ async function startServer() {
   const io = new Server(server, {
     ...config.socket,
     cors: {
-      origin: process.env.NODE_ENV === 'development' ? ['http://localhost:8080', 'http://localhost:3000'] : false,
+      origin: process.env.NODE_ENV === 'development' ? ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:5175', 'http://localhost:3000'] : false,
       credentials: true
     }
   });
@@ -42,7 +42,13 @@ async function startServer() {
   // CORS middleware for development
   if (process.env.NODE_ENV === 'development') {
     app.use((req, res, next) => {
-      res.header('Access-Control-Allow-Origin', 'http://localhost:8080');
+      const origin = req.headers.origin;
+      const allowedOrigins = ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:5175', 'http://localhost:3000'];
+      
+      if (allowedOrigins.includes(origin)) {
+        res.header('Access-Control-Allow-Origin', origin);
+      }
+      
       res.header('Access-Control-Allow-Credentials', 'true');
       res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
       res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
@@ -63,13 +69,24 @@ async function startServer() {
       resave: false,
       saveUninitialized: false,
       cookie: {
-        secure: process.env.NODE_ENV === 'production',
-        maxAge: 24 * 60 * 60 * 1000 // 24 hours
+        secure: false, // Always false in development, even for production might need to be false if not using HTTPS
+        maxAge: 24 * 60 * 60 * 1000, // 24 hours
+        httpOnly: true,
+        sameSite: process.env.NODE_ENV === 'development' ? 'lax' : 'strict'
       }
     })
   );
 
-  app.use(express.static(join(__dirname, '../frontend/public')));
+  // Serve static assets that React frontend needs
+  app.use('/js', express.static(join(__dirname, '../frontend-react/public/js')));
+  app.use('/img', express.static(join(__dirname, '../frontend-react/public/img')));
+  app.use('/styles', express.static(join(__dirname, '../frontend-react/public/styles')));
+
+  // For production, serve React app static files
+  if (process.env.NODE_ENV === 'production') {
+    app.use(express.static(join(__dirname, '../frontend-react/dist')));
+  }
+
   app.use(authRoutes);
   app.use(questRoutes);
   app.use('/api/game', require('./routes/game'));
@@ -95,13 +112,12 @@ async function startServer() {
     }
   });
 
-  app.get('/', (req, res) => {
-    res.sendFile(join(__dirname, '../frontend/public', 'index.html'));
-  });
-
-  app.get('/lobby.html', (req, res) => {
-    res.sendFile(join(__dirname, '../frontend/public', 'lobby.html'));
-  });
+  // For production, serve React app for all unmatched routes
+  if (process.env.NODE_ENV === 'production') {
+    app.get('*', (req, res) => {
+      res.sendFile(join(__dirname, '../frontend-react/dist', 'index.html'));
+    });
+  }
 
   // register socket handlers in separate module
   const socketHandler = new SocketHandler(io);

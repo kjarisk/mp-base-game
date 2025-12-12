@@ -100,7 +100,7 @@ pm2 logs
        
        # Serve static files directly
        location /static/ {
-           alias /path/to/project/frontend/public/;
+           alias /path/to/project/frontend-react/dist/;
            expires 1y;
            add_header Cache-Control "public, immutable";
        }

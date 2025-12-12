@@ -10,7 +10,7 @@ describe('Project Tests', function () {
       'backend/server.js',
       'backend/database/index.js',
       'backend/config/index.js',
-      'frontend/public/index.html',
+      'frontend-react/index.html',
       'package.json',
       'config/ecosystem.test.json',
       'config/ecosystem.production.json'

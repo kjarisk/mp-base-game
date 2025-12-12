@@ -8,6 +8,7 @@ A modern, scalable multiplayer game starter with robust backend architecture, Po
 - **Dual Database Support**: PostgreSQL for production with in-memory fallback for development
 - **Real-time Multiplayer**: Socket.IO-based game rooms and player interactions
 - **Authentication System**: Session-based auth with guest mode support
+- **Hybrid Architecture**: React UI components for pages (Login, Lobby) + vanilla JS game logic for canvas/gameplay
 - **Automated CI/CD**: GitHub Actions workflows for test and production deployment
 - **Production Ready**: PM2 process management, health checks, and environment separation
 
@@ -19,15 +20,24 @@ A modern, scalable multiplayer game starter with robust backend architecture, Po
 # Install dependencies
 npm install
 
-# Start development (auto-restart on code changes)
-npm run dev
-
-# Start both backend and frontend servers
-npm run dev:full
-
-# Backend only: http://localhost:3000
-# Frontend dev server: http://localhost:8080
+# Start React hybrid frontend (ONLY option now)
+npm run dev:react
+# Backend: http://localhost:3000
+# React UI: http://localhost:5174
 ```
+
+### About the Hybrid Architecture
+
+This project uses a hybrid architecture:
+- **React Components**: Handle UI pages (Login, Lobby, Game wrapper)  
+- **Vanilla JS Game Logic**: Handles canvas rendering and game mechanics
+- **Single Frontend**: All assets consolidated in `frontend-react/`
+
+Benefits:
+- Modern component-based UI
+- Hot reloading for UI development  
+- Game logic remains vanilla JS for performance
+- Single source of truth for all frontend code
 
 ### Production
 ```bash
@@ -51,12 +61,13 @@ backend/
 ├── socket/          # Socket.IO event handlers
 └── utils/          # Logging and utilities
 
-frontend/
-├── public/         # Static HTML pages
-├── js/             # Client-side JavaScript
-│   ├── classes/    # Game object classes
-│   └── *.js        # Page-specific scripts
-└── styles/         # CSS stylesheets
+frontend-react/     # Single React frontend
+├── public/         # Static assets (js, img, styles from game)
+├── src/
+│   ├── components/ # React components (Login, Lobby, Game)
+│   ├── api.js      # API integration
+│   └── config.js   # Frontend configuration
+└── vite.config.js  # Vite build configuration
 
 config/             # Configuration files
 docs/               # Documentation
@@ -73,45 +84,6 @@ For detailed structure explanation, see [docs/PROJECT-STRUCTURE.md](./docs/PROJE
 - **[Troubleshooting](./docs/TROUBLESHOOTING.md)** - Fix common issues
 - **[Project Structure](./docs/PROJECT-STRUCTURE.md)** - Understand the codebase
 - **[Configuration Guide](./docs/CONFIGURATION.md)** - Environment vs Game config
-
-## Management Scripts
-
-### Server Management
-```bash
-# Complete server reset and setup
-./scripts/server-fix.sh full-fix
-
-# Check current status
-./scripts/server-fix.sh status
-
-# Clean PM2 processes
-./scripts/server-fix.sh clean
-
-# Start applications
-./scripts/server-fix.sh start
-```
-
-### Backup Management
-```bash
-# Initialize backup system
-./scripts/backup-manager.sh init
-
-# Create database backup
-./scripts/backup-manager.sh backup test
-./scripts/backup-manager.sh backup production
-
-# List available backups
-./scripts/backup-manager.sh list
-
-# Clean old backups
-./scripts/backup-manager.sh cleanup
-```
-
-### Common Fixes
-- **502 Bad Gateway**: Run `./scripts/server-fix.sh full-fix`
-- **PM2 Process Errors**: Run `./scripts/server-fix.sh clean && ./scripts/server-fix.sh start`
-- **Port Conflicts**: Run `./scripts/server-fix.sh ports`
-- **Backup Organization**: Run `./scripts/backup-manager.sh organize`
 
 ## Environment Configuration
 

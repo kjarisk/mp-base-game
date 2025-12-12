@@ -70,7 +70,7 @@ DATABASE_URL=postgresql://mp_game_user:your-password@localhost:5432/mp_game_prod
 
 ```
 ├── backend/         # Server code
-├── frontend/public/ # Client code  
+├── frontend-react/     # React UI components and client code  
 ├── config/         # Environment configs
 ├── shared/         # Shared constants
 └── scripts/        # Management scripts

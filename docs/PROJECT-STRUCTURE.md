@@ -42,31 +42,37 @@ backend/
 - **`services/GameService.js`**: Core game logic
 - **`config/index.js`**: Environment configuration
 
-## 🎮 Frontend Structure (`/frontend/`)
+## 🎮 Frontend Structure (Hybrid React + Vanilla JS)
 
 ```
-frontend/
+frontend-react/
+├── 📂 src/                  # React application
+│   ├── 📂 components/       # React UI components
+│   │   ├── 📄 Login.jsx     # Login/Register page
+│   │   ├── 📄 Lobby.jsx     # Game lobby
+│   │   ├── 📄 Game.jsx      # Game wrapper
+│   │   └── 📄 Leaderboard.jsx # Score display
+│   ├── 📂 context/          # React context/state management
+│   │   ├── � AppContext.jsx # Auth & app state
+│   │   └── 📄 GameContext.jsx # Game state & vanilla JS integration
+│   └── 📄 App.jsx           # Main React app
 └── public/
     ├── 📂 js/
-    │   ├── 📂 classes/      # Game object classes
-    │   ├── 📄 main.js       # Game engine
-    │   ├── 📄 lobby.js      # Lobby functionality
-    │   ├── 📄 login.js      # Authentication
-    │   └── 📄 *.js          # Page-specific scripts
-    ├── 📂 styles/
+    │   ├── 📂 classes/      # Game object classes (vanilla JS)
+    │   ├── 📄 dev-config.js # Development configuration
+    │   ├── 📄 frontend.js   # Game initialization
+    │   ├── 📄 eventListeners.js # Input handling
+    │   └── 📄 sanitizeHtml.js # Security utilities
+    ├── � styles/
     │   └── 📄 style.css     # Game styling
-    ├── 📂 img/              # Game assets
-    ├── 📄 index.html        # Main page
-    ├── 📄 lobby.html        # Game lobby
-    ├── 📄 game.html         # Game interface
-    └── 📄 *.html            # Other pages
+    └── � img/              # Game assets
 ```
 
 ### Key Frontend Files:
-- **`index.html`**: Landing page and game entry
-- **`game.html`**: Main game interface
-- **`js/main.js`**: Core game engine
-- **`js/classes/`**: Player, Enemy, Projectile classes
+- **React Components**: All UI (Login, Lobby, Game wrapper, Leaderboard)
+- **Context**: Clean state management and vanilla JS integration
+- **`js/classes/`**: Game logic (Player, Enemy, Projectile, GameController)
+- **`js/frontend.js`**: Game initialization and core game loop
 
 ## ⚙️ Configuration (`/config/`)
 
