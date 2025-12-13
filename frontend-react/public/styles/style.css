@@ -1,18 +1,23 @@
 :root {
-  /* New Cyberpunk Color Palette */
-  --bg-color: #0f0f1c;
-  --primary-color: #00f0ff;
-  --secondary-color: #ff00f0;
+  /* Teal and Orange/Gold Color Palette */
+  --bg-color: #0a0d10;
+  --primary-color: #20B2AA;
+  --secondary-color: #FF8C00;
   --accent-color: #ffffff;
-  --primary-hover-color: #00b3cc;
+  --primary-hover-color: #1A9A94;
+  --gold-color: #FFD700;
   
   /* Additional supporting colors */
-  --bg-overlay: rgba(15, 15, 28, 0.85);
-  --card-bg: rgba(0, 240, 255, 0.1);
-  --input-bg: rgba(255, 255, 255, 0.1);
-  --border-color: rgba(0, 240, 255, 0.3);
-  --shadow-primary: rgba(0, 240, 255, 0.4);
-  --shadow-secondary: rgba(255, 0, 240, 0.4);
+  --bg-overlay: rgba(10, 13, 16, 0.95);
+  --card-bg: rgba(32, 178, 170, 0.08);
+  --input-bg: rgba(255, 255, 255, 0.06);
+  --border-color: rgba(32, 178, 170, 0.22);
+  --shadow-primary: rgba(32, 178, 170, 0.35);
+  --shadow-secondary: rgba(255, 140, 0, 0.35);
+  
+  /* Text colors */
+  --text-muted: rgba(255, 255, 255, 0.6);
+  --text-dim: rgba(255, 255, 255, 0.4);
 }
 
 * {
@@ -25,8 +30,8 @@ body {
   min-height: 100vh;
   background: var(--bg-color);
   background-image: 
-    radial-gradient(circle at 20% 80%, rgba(0, 240, 255, 0.1) 0%, transparent 50%),
-    radial-gradient(circle at 80% 20%, rgba(255, 0, 240, 0.1) 0%, transparent 50%);
+    radial-gradient(circle at 20% 80%, rgba(32, 178, 170, 0.06) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(255, 140, 0, 0.05) 0%, transparent 50%);
   display: flex;
   align-items: center;
   justify-content: center;

@@ -132,6 +132,7 @@ export function GameProvider({ children, gameId, gameName, createGame = false })
       '/js/classes/Player.js',
       '/js/classes/Particle.js',
       '/js/classes/Projectile.js',
+      '/js/classes/Asteroid.js',
       '/js/classes/GameState.js',
       '/js/classes/UIManager.js',
       '/js/classes/SocketManager.js',

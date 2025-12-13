@@ -82,22 +82,31 @@ class Player {
     ctx.rotate(this.rotation);
     
     // Draw spaceship base
-    const size = this.radius * 2;
+    const size = this.radius * 2.5; // Slightly larger for better visibility
+    
+    // Add glow effect behind ship
+    ctx.shadowColor = this.color;
+    ctx.shadowBlur = 25;
+    
     ctx.drawImage(Player.spaceshipImage, -size/2, -size/2, size, size);
     
-    // Apply color overlay using composite operation
-    ctx.globalCompositeOperation = 'source-atop';
-    ctx.fillStyle = this.color;
-    ctx.globalAlpha = 0.6;
-    ctx.fillRect(-size/2, -size/2, size, size);
-    
-    // Add glow effect
-    ctx.globalCompositeOperation = 'destination-over';
-    ctx.globalAlpha = 0.3;
-    ctx.shadowColor = this.color;
-    ctx.shadowBlur = 20;
-    ctx.fillStyle = this.color;
-    ctx.fillRect(-size/2, -size/2, size, size);
+    // Draw engine thrust effect when moving
+    if (this.isThrusting) {
+      ctx.save();
+      ctx.globalAlpha = 0.8;
+      const thrustGradient = ctx.createRadialGradient(0, size/2.5, 0, 0, size/2.5, size/3);
+      thrustGradient.addColorStop(0, '#FFD700');
+      thrustGradient.addColorStop(0.5, '#FF8C00');
+      thrustGradient.addColorStop(1, 'transparent');
+      ctx.fillStyle = thrustGradient;
+      ctx.beginPath();
+      ctx.moveTo(-size/6, size/3);
+      ctx.lineTo(0, size/2 + Math.random() * 10);
+      ctx.lineTo(size/6, size/3);
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+    }
     
     ctx.restore();
   }

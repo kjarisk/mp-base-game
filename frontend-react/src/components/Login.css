@@ -1,11 +1,12 @@
-/* Login Component Styles */
+/* Login Component Styles - Teal and Coral Theme */
 .auth-container {
   min-height: 100vh;
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+  background: #0a0d10;
   color: white;
   padding: 2rem;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -15,24 +16,26 @@
   width: 100px;
   height: 100px;
   margin-bottom: 1rem;
-  filter: drop-shadow(0 0 20px rgba(0, 255, 255, 0.5));
+  filter: drop-shadow(0 0 20px rgba(32, 178, 170, 0.5));
 }
 
 .auth-container h1 {
   font-size: 2.5rem;
   margin-bottom: 2rem;
-  background: linear-gradient(45deg, #00ffff, #ff00ff);
+  background: linear-gradient(45deg, #20B2AA, #FF6B6B);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  text-align: center;
 }
 
 .tab-container {
   display: flex;
   margin-bottom: 2rem;
-  background: rgba(0, 0, 0, 0.3);
+  background: rgba(255, 255, 255, 0.05);
   border-radius: 8px;
   overflow: hidden;
+  border: 1px solid rgba(32, 178, 170, 0.2);
 }
 
 .tab-btn {
@@ -46,24 +49,24 @@
 }
 
 .tab-btn.active {
-  background: linear-gradient(45deg, #00ffff, #ff00ff);
+  background: linear-gradient(45deg, #20B2AA, #FF6B6B);
   color: white;
 }
 
 .tab-btn:hover:not(.active) {
-  background: rgba(0, 255, 255, 0.1);
+  background: rgba(32, 178, 170, 0.15);
   color: rgba(255, 255, 255, 0.8);
 }
 
 .error-message {
-  background: rgba(255, 0, 0, 0.1);
-  border: 1px solid rgba(255, 0, 0, 0.3);
-  color: #ff6b6b;
+  background: rgba(255, 107, 107, 0.1);
+  border: 1px solid rgba(255, 107, 107, 0.3);
+  color: #FF6B6B;
   padding: 1rem;
   border-radius: 8px;
   margin-bottom: 1rem;
   text-align: center;
-  max-width: 300px;
+  max-width: 320px;
   width: 100%;
 }
 
@@ -72,23 +75,24 @@
   flex-direction: column;
   gap: 1rem;
   width: 100%;
-  max-width: 300px;
+  max-width: 320px;
 }
 
 .auth-form input {
   padding: 1rem;
-  border: 2px solid rgba(0, 255, 255, 0.3);
+  border: 2px solid rgba(32, 178, 170, 0.3);
   border-radius: 8px;
-  background: rgba(0, 0, 0, 0.3);
+  background: rgba(255, 255, 255, 0.05);
   color: white;
   font-size: 1rem;
-  transition: border-color 0.3s;
+  transition: all 0.3s;
 }
 
 .auth-form input:focus {
   outline: none;
-  border-color: #00ffff;
-  box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+  border-color: #20B2AA;
+  box-shadow: 0 0 10px rgba(32, 178, 170, 0.3);
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .auth-form input::placeholder {
@@ -102,7 +106,7 @@
 
 .auth-form button {
   padding: 1rem;
-  background: linear-gradient(45deg, #00ffff, #ff00ff);
+  background: linear-gradient(45deg, #20B2AA, #FF6B6B);
   border: none;
   border-radius: 8px;
   color: white;
@@ -114,7 +118,7 @@
 
 .auth-form button:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(0, 255, 255, 0.4);
+  box-shadow: 0 5px 15px rgba(32, 178, 170, 0.4);
 }
 
 .auth-form button:disabled {
@@ -129,45 +133,38 @@
   color: rgba(255, 255, 255, 0.4);
   position: relative;
   width: 100%;
-  max-width: 300px;
+  max-width: 320px;
   text-align: center;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
 
-.divider::before {
+.divider::before,
+.divider::after {
   content: '';
-  position: absolute;
-  top: 50%;
-  left: 0;
-  right: 0;
+  flex: 1;
   height: 1px;
   background: rgba(255, 255, 255, 0.2);
-  z-index: 1;
-}
-
-.divider {
-  background: #1a1a2e;
-  padding: 0 1rem;
-  z-index: 2;
-  position: relative;
 }
 
 .guest-btn {
   padding: 1rem 2rem;
-  background: linear-gradient(45deg, #00ff88, #00ffff);
+  background: linear-gradient(45deg, #20B2AA, #4ECDC4);
   border: none;
   border-radius: 8px;
-  color: black;
+  color: #0a0d10;
   font-size: 1rem;
   font-weight: bold;
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
-  max-width: 300px;
+  max-width: 320px;
   width: 100%;
 }
 
 .guest-btn:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(0, 255, 136, 0.4);
+  box-shadow: 0 5px 15px rgba(32, 178, 170, 0.4);
 }
 
 .guest-btn:disabled {

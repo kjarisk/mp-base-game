@@ -4,7 +4,7 @@ const { GAME_CONSTANTS } = require('../../shared/constants');
 
 const config = {
   server: {
-    port: parseInt(process.env.PORT) || 3000,
+    port: parseInt(process.env.PORT) || 3005,
     sessionSecret: process.env.SESSION_SECRET || 'keyboard cat'
   },
   socket: {

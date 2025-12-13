@@ -1,5 +1,6 @@
 const logger = require('../utils/logger');
 const config = require('../config');
+const gameConfig = require('../../shared/gameConfig');
 
 class ProjectileManager {
   constructor(collisionDetector) {
@@ -77,12 +78,11 @@ class ProjectileManager {
         }
       }
 
-      // Check boundaries
-      const anyPlayer = Object.values(game.players)[0];
-      const maxX = anyPlayer?.canvas?.width || 1024;
-      const maxY = anyPlayer?.canvas?.height || 576;
+      // Check boundaries using map dimensions
+      const mapWidth = gameConfig.MAP_WIDTH;
+      const mapHeight = gameConfig.MAP_HEIGHT;
       
-      if (this.collisionDetector.checkProjectileBoundaries(projectile, maxX, maxY)) {
+      if (this.collisionDetector.checkProjectileBoundaries(projectile, mapWidth, mapHeight)) {
         projectilesToRemove.push(id);
         logger.debug(`Projectile ${id} removed - out of bounds: (${projectile.x}, ${projectile.y})`);
       }

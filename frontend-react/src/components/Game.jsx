@@ -9,15 +9,24 @@ function GameContent() {
 
   return (
     <div className="game-page">
-      <div className="game-container">
+      {/* Left sidebar with leaderboard */}
+      <div className="game-sidebar left-sidebar">
+        <Leaderboard />
+      </div>
+      
+      {/* Main game area with canvas */}
+      <div className="game-main">
+        <GameCanvas />
+      </div>
+      
+      {/* Right sidebar with controls */}
+      <div className="game-sidebar right-sidebar">
         <button 
           className="back-to-lobby-btn"
           onClick={() => navigateTo('/lobby')}
         >
-          ← Back to Lobby
+          Back to Lobby
         </button>
-        <Leaderboard />
-        <GameCanvas />
       </div>
     </div>
   );

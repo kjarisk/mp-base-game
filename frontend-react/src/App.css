@@ -1,8 +1,15 @@
-/* Global App Styles */
+/* Global App Styles - Teal and Coral Theme */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+}
+
+html, body, #root {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 body {
@@ -10,27 +17,30 @@ body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background: #0a0d10;
 }
 
 .App {
   min-height: 100vh;
+  width: 100%;
 }
 
 .loading-container {
   min-height: 100vh;
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+  background: #0a0d10;
   color: white;
 }
 
 .loading-spinner {
   width: 50px;
   height: 50px;
-  border: 3px solid rgba(0, 255, 255, 0.3);
-  border-top: 3px solid #00ffff;
+  border: 3px solid rgba(32, 178, 170, 0.3);
+  border-top: 3px solid #20B2AA;
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin-bottom: 1rem;
@@ -43,13 +53,15 @@ body {
 
 /* CSS Variables for consistent theming */
 :root {
-  --bg-color: #0d1421;
-  --bg-overlay: rgba(13, 20, 33, 0.9);
-  --primary-color: #00ffff;
+  --bg-color: #0a0d10;
+  --bg-overlay: rgba(10, 13, 16, 0.95);
+  --primary-color: #20B2AA;
+  --secondary-color: #FF6B6B;
   --accent-color: #ffffff;
-  --border-color: rgba(0, 255, 255, 0.3);
-  --shadow-primary: rgba(0, 255, 255, 0.5);
-  --success-color: #00ff88;
-  --warning-color: #ffaa00;
-  --error-color: #ff4444;
+  --border-color: rgba(32, 178, 170, 0.3);
+  --shadow-primary: rgba(32, 178, 170, 0.4);
+  --shadow-secondary: rgba(255, 107, 107, 0.4);
+  --success-color: #4ECDC4;
+  --warning-color: #FFB347;
+  --error-color: #FF6B6B;
 }

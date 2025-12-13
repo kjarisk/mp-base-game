@@ -23,7 +23,7 @@ async function startServer() {
   const io = new Server(server, {
     ...config.socket,
     cors: {
-      origin: process.env.NODE_ENV === 'development' ? ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:5175', 'http://localhost:3000'] : false,
+      origin: process.env.NODE_ENV === 'development' ? ['http://localhost:8000', 'http://localhost:3005'] : false,
       credentials: true
     }
   });
@@ -43,7 +43,7 @@ async function startServer() {
   if (process.env.NODE_ENV === 'development') {
     app.use((req, res, next) => {
       const origin = req.headers.origin;
-      const allowedOrigins = ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:5175', 'http://localhost:3000'];
+      const allowedOrigins = ['http://localhost:8000', 'http://localhost:3005'];
       
       if (allowedOrigins.includes(origin)) {
         res.header('Access-Control-Allow-Origin', origin);

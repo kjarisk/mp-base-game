@@ -20,16 +20,22 @@ function GameCanvas() {
       {!gameLoaded && (
         <div className="game-loading">
           <div className="loading-spinner"></div>
-          <p>Loading game...</p>
+          <p>Loading game assets...</p>
         </div>
       )}
       {gameLoaded && !gameInitialized && (
         <div className="game-loading">
           <div className="loading-spinner"></div>
-          <p>Initializing game...</p>
+          <p>Connecting to server...</p>
         </div>
       )}
-      <canvas style={{ display: gameInitialized ? 'block' : 'none' }}></canvas>
+      <canvas 
+        id="gameCanvas"
+        style={{ 
+          display: gameInitialized ? 'block' : 'none',
+          cursor: 'crosshair'
+        }}
+      ></canvas>
     </div>
   );
 }

@@ -22,8 +22,8 @@ npm install
 
 # Start React hybrid frontend (ONLY option now)
 npm run dev:react
-# Backend: http://localhost:3000
-# React UI: http://localhost:5174
+# Backend: http://localhost:3005
+# React UI: http://localhost:8000
 ```
 
 ### About the Hybrid Architecture
@@ -92,7 +92,7 @@ Create environment files for different deployments:
 **Development (.env)**
 ```bash
 NODE_ENV=development
-PORT=3000
+PORT=3005
 SESSION_SECRET=dev-secret-key
 # Leave DATABASE_URL empty for in-memory storage
 ```

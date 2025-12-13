@@ -1,5 +1,6 @@
 const logger = require('../utils/logger');
 const config = require('../config');
+const gameConfig = require('../../shared/gameConfig');
 
 class PlayerManager {
   constructor() {
@@ -7,17 +8,23 @@ class PlayerManager {
   }
 
   createPlayer(socketId, playerData) {
-    logger.info(`🎮 Creating player: socketId=${socketId}, username=${playerData.username}`);
+    logger.info(`Creating player: socketId=${socketId}, username=${playerData.username}`);
     
-    // Create unique display name if username already exists would be handled by GameService
+    // Use map dimensions for spawning, not viewport
+    const mapWidth = gameConfig.MAP_WIDTH;
+    const mapHeight = gameConfig.MAP_HEIGHT;
+    const radius = config.game.playerRadius;
+    
+    // Spawn player at random position within map bounds (with some padding)
+    const padding = 100;
     const player = {
       id: socketId,
-      x: playerData.width * Math.random(),
-      y: playerData.height * Math.random(),
-      color: `hsl(${360 * Math.random()}, 100%, 50%)`,
+      x: padding + Math.random() * (mapWidth - padding * 2),
+      y: padding + Math.random() * (mapHeight - padding * 2),
+      color: `hsl(${360 * Math.random()}, 70%, 50%)`,
       sequenceNumber: 0,
       score: 0,
-      username: playerData.username, // GameService will handle uniqueness
+      username: playerData.username,
       originalUsername: playerData.username,
       canvas: {
         width: playerData.width,
@@ -26,7 +33,7 @@ class PlayerManager {
       joinedAt: new Date().toISOString()
     };
 
-    logger.info(`🎮 Player created: ${player.username} at (${Math.round(player.x)}, ${Math.round(player.y)})`);
+    logger.info(`Player created: ${player.username} at (${Math.round(player.x)}, ${Math.round(player.y)})`);
     return player;
   }
 
@@ -57,10 +64,13 @@ class PlayerManager {
         break;
     }
 
-    // Boundary checking
+    // Boundary checking using map dimensions
     const radius = config.game.playerRadius;
-    newX = Math.max(radius, Math.min(player.canvas.width - radius, newX));
-    newY = Math.max(radius, Math.min(player.canvas.height - radius, newY));
+    const mapWidth = gameConfig.MAP_WIDTH;
+    const mapHeight = gameConfig.MAP_HEIGHT;
+    
+    newX = Math.max(radius, Math.min(mapWidth - radius, newX));
+    newY = Math.max(radius, Math.min(mapHeight - radius, newY));
 
     player.x = newX;
     player.y = newY;
@@ -74,7 +84,7 @@ class PlayerManager {
     let displayName = username;
     let counter = 2;
     
-    logger.info(`🎮 Ensuring unique username for: ${username}, existing usernames: [${existingUsernames.join(', ')}]`);
+    logger.info(`Ensuring unique username for: ${username}, existing usernames: [${existingUsernames.join(', ')}]`);
     
     while (existingUsernames.includes(displayName)) {
       displayName = `${username}_${counter}`;
@@ -82,7 +92,7 @@ class PlayerManager {
     }
     
     if (displayName !== username) {
-      logger.info(`🎮 Username changed from ${username} to ${displayName} to ensure uniqueness`);
+      logger.info(`Username changed from ${username} to ${displayName} to ensure uniqueness`);
     }
     
     return displayName;

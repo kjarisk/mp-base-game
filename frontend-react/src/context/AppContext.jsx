@@ -12,6 +12,7 @@ const ACTIONS = {
   SET_GAMES: 'SET_GAMES',
   SET_SOCKET: 'SET_SOCKET',
   SET_GAME_PARAMS: 'SET_GAME_PARAMS',
+  SET_GAME_MODE: 'SET_GAME_MODE',
   CLEAR_ERROR: 'CLEAR_ERROR',
   LOGOUT: 'LOGOUT'
 };
@@ -24,7 +25,8 @@ const initialState = {
   currentPage: 'login',
   games: [],
   socket: null,
-  gameParams: null
+  gameParams: null,
+  gameMode: null // 'single' or 'multi'
 };
 
 // Reducer
@@ -44,10 +46,12 @@ function appReducer(state, action) {
       return { ...state, socket: action.payload };
     case ACTIONS.SET_GAME_PARAMS:
       return { ...state, gameParams: action.payload };
+    case ACTIONS.SET_GAME_MODE:
+      return { ...state, gameMode: action.payload };
     case ACTIONS.CLEAR_ERROR:
       return { ...state, error: null };
     case ACTIONS.LOGOUT:
-      return { ...state, user: null, currentPage: 'login' };
+      return { ...state, user: null, currentPage: 'login', gameMode: null };
     default:
       return state;
   }
@@ -65,9 +69,9 @@ export function AppProvider({ children }) {
     initializeApp();
   }, []);
 
-  // Initialize socket when user is authenticated
+  // Initialize socket when user is authenticated and in multiplayer mode
   useEffect(() => {
-    if (state.user && !state.socket) {
+    if (state.user && !state.socket && state.gameMode === 'multi') {
       const socketInstance = io(CONFIG.SOCKET_URL);
       dispatch({ type: ACTIONS.SET_SOCKET, payload: socketInstance });
 
@@ -80,7 +84,7 @@ export function AppProvider({ children }) {
         socketInstance.disconnect();
       };
     }
-  }, [state.user, state.socket]);
+  }, [state.user, state.socket, state.gameMode]);
 
   // App initialization
   const initializeApp = async () => {
@@ -107,20 +111,30 @@ export function AppProvider({ children }) {
     const urlParams = new URLSearchParams(window.location.search);
 
     if (user) {
-      if (path === '/lobby') {
+      if (path === '/mode-select') {
+        dispatch({ type: ACTIONS.SET_PAGE, payload: 'mode-select' });
+      } else if (path === '/lobby') {
+        dispatch({ type: ACTIONS.SET_GAME_MODE, payload: 'multi' });
         dispatch({ type: ACTIONS.SET_PAGE, payload: 'lobby' });
+      } else if (path === '/single-player') {
+        dispatch({ type: ACTIONS.SET_GAME_MODE, payload: 'single' });
+        dispatch({ type: ACTIONS.SET_PAGE, payload: 'single-player' });
+      } else if (path === '/achievements') {
+        dispatch({ type: ACTIONS.SET_PAGE, payload: 'achievements' });
       } else if (path === '/game') {
         const gameId = urlParams.get('gameId');
         const gameName = urlParams.get('gameName');
         
         if (gameId) {
+          dispatch({ type: ACTIONS.SET_GAME_MODE, payload: 'multi' });
           dispatch({ type: ACTIONS.SET_GAME_PARAMS, payload: { gameId, gameName } });
           dispatch({ type: ACTIONS.SET_PAGE, payload: 'game' });
         } else {
-          navigateTo('/lobby');
+          navigateTo('/mode-select');
         }
       } else {
-        navigateTo('/lobby');
+        // Default: go to mode select
+        navigateTo('/mode-select');
       }
     } else {
       dispatch({ type: ACTIONS.SET_PAGE, payload: 'login' });
@@ -133,13 +147,28 @@ export function AppProvider({ children }) {
   // Navigation helper
   const navigateTo = (path) => {
     window.history.pushState(null, '', path);
-    if (path === '/lobby') {
-      dispatch({ type: ACTIONS.SET_GAME_PARAMS, payload: null }); // Clear game params when going to lobby
+    
+    if (path === '/mode-select') {
+      dispatch({ type: ACTIONS.SET_GAME_PARAMS, payload: null });
+      dispatch({ type: ACTIONS.SET_PAGE, payload: 'mode-select' });
+    } else if (path === '/lobby') {
+      dispatch({ type: ACTIONS.SET_GAME_PARAMS, payload: null });
       dispatch({ type: ACTIONS.SET_PAGE, payload: 'lobby' });
+    } else if (path === '/single-player') {
+      dispatch({ type: ACTIONS.SET_GAME_PARAMS, payload: null });
+      dispatch({ type: ACTIONS.SET_PAGE, payload: 'single-player' });
+    } else if (path === '/achievements') {
+      dispatch({ type: ACTIONS.SET_GAME_PARAMS, payload: null });
+      dispatch({ type: ACTIONS.SET_PAGE, payload: 'achievements' });
     } else if (path === '/') {
-      dispatch({ type: ACTIONS.SET_GAME_PARAMS, payload: null }); // Clear game params when going to login
+      dispatch({ type: ACTIONS.SET_GAME_PARAMS, payload: null });
       dispatch({ type: ACTIONS.SET_PAGE, payload: 'login' });
     }
+  };
+
+  // Set game mode
+  const setGameMode = (mode) => {
+    dispatch({ type: ACTIONS.SET_GAME_MODE, payload: mode });
   };
 
   // Authentication actions
@@ -240,6 +269,7 @@ export function AppProvider({ children }) {
     createGame,
     joinGame,
     navigateTo,
+    setGameMode,
     clearError
   };
 

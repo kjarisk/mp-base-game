@@ -17,8 +17,8 @@ The project uses a clean separation between **environment configuration** and **
 ### Contains:
 ```bash
 # Server settings
-NODE_ENV=production
-PORT=3000
+NODE_ENV=development
+PORT=3005
 SESSION_SECRET=secure-key
 
 # Database connection

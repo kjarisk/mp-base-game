@@ -1,5 +1,6 @@
 const logger = require('../utils/logger');
 const config = require('../config');
+const gameConfig = require('../../shared/gameConfig');
 
 class CollisionDetector {
   constructor() {
@@ -16,11 +17,11 @@ class CollisionDetector {
     return distance < collisionDistance;
   }
 
-  checkProjectileBoundaries(projectile, canvasWidth, canvasHeight) {
+  checkProjectileBoundaries(projectile, mapWidth, mapHeight) {
     return projectile.x < 0 || 
-           projectile.x > canvasWidth || 
+           projectile.x > mapWidth || 
            projectile.y < 0 || 
-           projectile.y > canvasHeight;
+           projectile.y > mapHeight;
   }
 
   handlePlayerHit(shooter, hitPlayer) {
@@ -30,9 +31,13 @@ class CollisionDetector {
     shooter.score = (shooter.score || 0) + 1;
     logger.info(`${shooter.username} scored! New score: ${shooter.score}`);
 
-    // Respawn hit player at random location
-    hitPlayer.x = hitPlayer.canvas.width * Math.random();
-    hitPlayer.y = hitPlayer.canvas.height * Math.random();
+    // Respawn hit player at random location using map dimensions
+    const padding = 100;
+    const mapWidth = gameConfig.MAP_WIDTH;
+    const mapHeight = gameConfig.MAP_HEIGHT;
+    
+    hitPlayer.x = padding + Math.random() * (mapWidth - padding * 2);
+    hitPlayer.y = padding + Math.random() * (mapHeight - padding * 2);
     logger.info(`Player ${hitPlayer.username} respawned at (${hitPlayer.x}, ${hitPlayer.y})`);
   }
 }

@@ -16,9 +16,13 @@ module.exports = {
   ENEMY_HEALTH: 50,
   PROJECTILE_DAMAGE: 25,
   
-  // Map settings
-  MAP_WIDTH: 800,
-  MAP_HEIGHT: 600,
+  // Map settings - 8x screen size
+  MAP_WIDTH: 6400,
+  MAP_HEIGHT: 4800,
+  
+  // Viewport settings (what player sees) - 20% wider, 30% taller
+  VIEWPORT_WIDTH: 1229,
+  VIEWPORT_HEIGHT: 749,
   
   // Scoring
   POINTS_PER_ENEMY: 10,

@@ -110,13 +110,11 @@ class InputManager {
     // Prevent rapid-fire shooting with global guard
     const now = Date.now();
     if (now - this.lastShootTime < this.shootCooldown) {
-      console.log('🔫 Shot blocked - cooldown active');
       return;
     }
     
     // Global shooting guard to prevent multiple instances from shooting
     if (window.lastGlobalShoot && now - window.lastGlobalShoot < 200) {
-      console.log('🔫 Shot blocked - global cooldown active');
       return;
     }
     
@@ -127,15 +125,16 @@ class InputManager {
     if (!canvas) return;
     
     const rect = canvas.getBoundingClientRect();
-    const clickX = e.clientX - rect.left;
-    const clickY = e.clientY - rect.top;
+    const screenX = e.clientX - rect.left;
+    const screenY = e.clientY - rect.top;
+    
+    // Convert screen coordinates to world coordinates
+    const worldPos = this.gameState.screenToWorld(screenX, screenY);
     
     const player = this.gameState.getCurrentPlayer();
     if (player) {
-      console.log('🔫 Shooting projectile from player:', player.username);
-      
-      // Calculate projectile direction
-      const angle = Math.atan2(clickY - player.y, clickX - player.x);
+      // Calculate projectile direction using world coordinates
+      const angle = Math.atan2(worldPos.y - player.y, worldPos.x - player.x);
       const velocity = {
         x: Math.cos(angle) * 5,
         y: Math.sin(angle) * 5

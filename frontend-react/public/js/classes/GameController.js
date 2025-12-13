@@ -60,9 +60,13 @@ class GameController {
     const canvas = document.querySelector('canvas');
     const context = canvas.getContext('2d');
     
+    // New viewport size: 20% wider, 30% taller
+    const viewportWidth = 1229;
+    const viewportHeight = 749;
+    
     const devicePixelRatio = window.devicePixelRatio || 1;
-    canvas.width = 1024 * devicePixelRatio;
-    canvas.height = 576 * devicePixelRatio;
+    canvas.width = viewportWidth * devicePixelRatio;
+    canvas.height = viewportHeight * devicePixelRatio;
     context.scale(devicePixelRatio, devicePixelRatio);
     
     this.gameState.setCanvas(canvas, context);

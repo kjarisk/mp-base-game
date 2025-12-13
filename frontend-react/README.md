@@ -4,7 +4,7 @@ This is the React frontend for the multiplayer game project. It provides the UI 
 
 ## Development
 
-- `npm run dev` - Start the development server on port 5173
+- `npm run dev` - Start the development server on port 8000
 - `npm run build` - Build for production
 - `npm run preview` - Preview the production build
 

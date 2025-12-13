@@ -1,0 +1,181 @@
+/* Leaderboard Component Styles - Teal and Coral Theme */
+.leaderboard {
+  background: rgba(10, 13, 16, 0.95);
+  border: 1px solid rgba(32, 178, 170, 0.25);
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  min-width: 220px;
+  max-width: 250px;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.leaderboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid rgba(32, 178, 170, 0.15);
+}
+
+.leaderboard-header h3 {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #20B2AA;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+
+.player-count {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.5);
+  background: rgba(32, 178, 170, 0.1);
+  padding: 0.2rem 0.5rem;
+  border-radius: 10px;
+  border: 1px solid rgba(32, 178, 170, 0.2);
+}
+
+.leaderboard-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+/* Custom scrollbar */
+.leaderboard-list::-webkit-scrollbar {
+  width: 4px;
+}
+
+.leaderboard-list::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 2px;
+}
+
+.leaderboard-list::-webkit-scrollbar-thumb {
+  background: rgba(32, 178, 170, 0.3);
+  border-radius: 2px;
+}
+
+.leaderboard-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(32, 178, 170, 0.5);
+}
+
+.no-players {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.8rem;
+  padding: 1.5rem 0;
+  font-style: italic;
+}
+
+.no-players p {
+  margin: 0;
+}
+
+.leaderboard-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 0.6rem;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.leaderboard-item:hover {
+  background: rgba(32, 178, 170, 0.06);
+  border-color: rgba(32, 178, 170, 0.1);
+}
+
+/* Top 3 special styling */
+.leaderboard-item.top-three {
+  background: rgba(32, 178, 170, 0.05);
+}
+
+/* Leader (1st place) special styling */
+.leaderboard-item.leader {
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.08) 0%, rgba(32, 178, 170, 0.08) 100%);
+  border: 1px solid rgba(255, 215, 0, 0.25);
+}
+
+/* Rank badge */
+.rank {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.4);
+  min-width: 26px;
+  text-align: center;
+  font-weight: 500;
+}
+
+.rank-1 {
+  color: #FFD700;
+  font-weight: 700;
+}
+
+.rank-2 {
+  color: #C0C0C0;
+}
+
+.rank-3 {
+  color: #CD7F32;
+}
+
+.crown {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  border-radius: 50%;
+  font-size: 0.65rem;
+  color: #0a0d10;
+  font-weight: 800;
+}
+
+/* Player color indicator */
+.player-color {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-shadow: 0 0 8px currentColor;
+}
+
+/* Username */
+.username {
+  flex: 1;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.85);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 500;
+}
+
+/* Score */
+.score {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #20B2AA;
+  min-width: 30px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Animation for score changes */
+@keyframes scoreUpdate {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.15); color: #FF6B6B; }
+  100% { transform: scale(1); }
+}
+
+.score.updated {
+  animation: scoreUpdate 0.3s ease;
+}

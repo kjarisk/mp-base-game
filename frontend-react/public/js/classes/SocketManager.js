@@ -52,6 +52,10 @@ class SocketManager {
       console.log('Successfully joined game:', data);
     });
 
+    this.socket.on('updateAsteroids', (asteroids) => {
+      this.handleAsteroidsUpdate(asteroids);
+    });
+
     this.socket.on('disconnect', (reason) => {
       console.error('🔌 Disconnected from server:', reason);
       this.gameState.players = {}; // Clear players on disconnect
@@ -90,7 +94,14 @@ class SocketManager {
   }
 
   handlePlayersUpdate(backendPlayers) {
-    console.log('Received updatePlayers:', backendPlayers);
+    // Validate backendPlayers is a valid object
+    if (!backendPlayers || typeof backendPlayers !== 'object') {
+      console.warn('Invalid backendPlayers data received:', backendPlayers);
+      return;
+    }
+    
+    const backendPlayerIds = Object.keys(backendPlayers);
+    console.log('Received updatePlayers:', backendPlayerIds.length, 'players');
     
     // Add/update players
     for (const id in backendPlayers) {
@@ -111,11 +122,22 @@ class SocketManager {
       }
     }
 
-    // Remove players that no longer exist
-    for (const id in this.gameState.players) {
-      if (!backendPlayers[id]) {
-        this.gameState.removePlayer(id);
-        this.uiManager.removePlayerLabel(id);
+    // Remove players that no longer exist - but only if we have valid data
+    // and the current player is still in the list (prevents race condition)
+    const currentPlayerId = this.gameState.socketId;
+    const currentPlayerInBackend = backendPlayers[currentPlayerId];
+    
+    // Only remove players if the update includes our own player (valid state)
+    // This prevents removing players during partial/stale updates
+    if (currentPlayerInBackend || backendPlayerIds.length === 0) {
+      for (const id in this.gameState.players) {
+        if (!backendPlayers[id]) {
+          // Double-check this isn't the current player before removing
+          if (id !== currentPlayerId) {
+            this.gameState.removePlayer(id);
+            this.uiManager.removePlayerLabel(id);
+          }
+        }
       }
     }
 
@@ -140,6 +162,13 @@ class SocketManager {
         this.gameState.removeProjectile(id);
       }
     }
+  }
+
+  handleAsteroidsUpdate(asteroids) {
+    console.log('Received asteroids update:', asteroids.length, 'asteroids');
+    
+    // Convert asteroid data to Asteroid objects
+    this.gameState.asteroids = asteroids.map(data => Asteroid.fromJSON(data));
   }
 
   emit(event, data) {

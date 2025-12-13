@@ -99,6 +99,9 @@ class SocketHandler {
         }
       });
 
+      // Send asteroids to the new player
+      socket.emit('updateAsteroids', game.asteroids);
+
       // Broadcast updated player list to all players in the game
       this.io.to(gameId).emit('updatePlayers', game.players);
       this.broadcastGames();
@@ -218,12 +221,29 @@ class SocketHandler {
       for (const [gameId, game] of Object.entries(games)) {
         const oldProjectileCount = Object.keys(game.projectiles).length;
         
+        // Store player scores before update to detect changes
+        const playerScoresBefore = {};
+        for (const [id, player] of Object.entries(game.players)) {
+          playerScoresBefore[id] = player.score;
+        }
+        
         this.gameService.updateProjectiles(gameId);
         
         const newProjectileCount = Object.keys(game.projectiles).length;
+        
+        // Check if any player scores changed (collision occurred)
+        let playerStateChanged = false;
+        for (const [id, player] of Object.entries(game.players)) {
+          if (playerScoresBefore[id] !== player.score) {
+            playerStateChanged = true;
+            break;
+          }
+        }
 
-        // Always emit updated players when projectiles are processed (for scoring/respawning)
-        this.io.to(gameId).emit('updatePlayers', game.players);
+        // Only emit player updates when state actually changed
+        if (playerStateChanged) {
+          this.io.to(gameId).emit('updatePlayers', game.players);
+        }
 
         // Always emit projectiles if there are any active ones
         if (newProjectileCount > 0) {

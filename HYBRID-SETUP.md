@@ -13,14 +13,14 @@
 ```bash
 npm run dev:full
 # Backend: http://localhost:3000
-# Frontend: http://localhost:5173 (React dev server)
+# Frontend: http://localhost:8000 (React dev server)
 ```
 
 #### Option B: React Hybrid Frontend (RECOMMENDED)
 ```bash
 npm run dev:react
 # Backend: http://localhost:3000
-# React UI: http://localhost:5174
+# React UI: http://localhost:8000
 ```
 
 ### 3. Benefits of Hybrid Approach

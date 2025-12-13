@@ -4,6 +4,7 @@ const Game = require('./Game');
 const PlayerManager = require('./PlayerManager');
 const ProjectileManager = require('./ProjectileManager');
 const CollisionDetector = require('./CollisionDetector');
+const AsteroidManager = require('./AsteroidManager');
 
 class GameService {
   constructor() {
@@ -11,6 +12,7 @@ class GameService {
     this.playerManager = new PlayerManager();
     this.collisionDetector = new CollisionDetector();
     this.projectileManager = new ProjectileManager(this.collisionDetector);
+    this.asteroidManager = new AsteroidManager();
   }
 
   createGame(gameId, gameName, ownerUsername) {
@@ -23,6 +25,11 @@ class GameService {
     }
 
     const game = new Game(gameId, gameName, ownerUsername);
+    
+    // Generate asteroids for the game
+    const asteroids = this.asteroidManager.generateAsteroids(50);
+    game.setAsteroids(asteroids);
+    
     this.games[gameId] = game;
 
     logger.info(`Game created: ${gameName} by ${ownerUsername}`);

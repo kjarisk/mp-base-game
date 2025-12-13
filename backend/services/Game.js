@@ -8,8 +8,14 @@ class Game {
     this.owner = ownerUsername;
     this.players = {};
     this.projectiles = {};
+    this.asteroids = []; // Will be populated by AsteroidManager
     this.createdAt = new Date().toISOString();
     this.maxPlayers = config.game.maxPlayersPerGame;
+  }
+
+  setAsteroids(asteroids) {
+    this.asteroids = asteroids;
+    logger.info(`Game ${this.name} initialized with ${asteroids.length} asteroids`);
   }
 
   addPlayer(socketId, player) {

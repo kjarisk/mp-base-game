@@ -22,7 +22,7 @@ const PROD_CONFIG = {
 };
 
 // Auto-detect environment
-const isDevelopment = window.location.port === '5174' || window.location.hostname === 'localhost';
+const isDevelopment = window.location.port === '8000' || window.location.hostname === 'localhost';
 const config = isDevelopment ? DEV_CONFIG : PROD_CONFIG;
 
 // Make config available globally
