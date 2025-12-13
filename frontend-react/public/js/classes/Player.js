@@ -111,3 +111,5 @@ class Player {
     ctx.restore();
   }
 }
+
+window.Player = Player;

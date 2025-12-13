@@ -31,25 +31,30 @@ const CATEGORY_LABELS = {
 };
 
 function Achievements() {
-  const { navigateTo } = useAppContext();
+  const { navigateTo, user } = useAppContext();
   const [achievements, setAchievements] = useState([]);
   const [stats, setStats] = useState({});
   const [selectedCategory, setSelectedCategory] = useState('all');
 
   useEffect(() => {
+    // Clean up old generic localStorage keys on first load
+    if (window.AchievementManager) {
+      window.AchievementManager.cleanupOldKeys();
+    }
     loadAchievements();
-  }, []);
+  }, [user]);
 
   const loadAchievements = () => {
-    // Load from AchievementManager if available
+    // Load from AchievementManager if available with user ID
     if (window.AchievementManager) {
-      const manager = new window.AchievementManager();
+      const manager = new window.AchievementManager(user?.id || null);
       setAchievements(manager.getAllAchievements());
       setStats(manager.stats);
     } else {
-      // Fallback: load from localStorage directly
-      const savedAchievements = localStorage.getItem('sp_achievements');
-      const savedStats = localStorage.getItem('sp_achievement_stats');
+      // Fallback: load from localStorage directly with user-specific keys
+      const storagePrefix = user?.id ? `sp_user_${user.id}_` : 'sp_guest_';
+      const savedAchievements = localStorage.getItem(`${storagePrefix}achievements`);
+      const savedStats = localStorage.getItem(`${storagePrefix}achievement_stats`);
       
       const unlocked = savedAchievements ? JSON.parse(savedAchievements) : {};
       const statsData = savedStats ? JSON.parse(savedStats) : {};
@@ -134,6 +139,24 @@ function Achievements() {
     navigateTo('/mode-select');
   };
 
+  const handleResetStats = () => {
+    if (window.confirm('Are you sure you want to reset all your achievements and stats? This cannot be undone.')) {
+      // Clean up old generic keys first
+      if (window.AchievementManager) {
+        window.AchievementManager.cleanupOldKeys();
+      }
+      
+      // Reset user-specific data
+      const storagePrefix = user?.id ? `sp_user_${user.id}_` : 'sp_guest_';
+      localStorage.removeItem(`${storagePrefix}achievements`);
+      localStorage.removeItem(`${storagePrefix}achievement_stats`);
+      
+      // Reload achievements
+      setStats({});
+      loadAchievements();
+    }
+  };
+
   const unlockedCount = achievements.filter(a => a.unlocked).length;
   const totalCount = achievements.length;
 
@@ -150,9 +173,14 @@ function Achievements() {
           ← Back
         </button>
         <h1>Achievements</h1>
-        <div className="achievements-summary">
-          <span className="unlocked-count">{unlockedCount}</span>
-          <span className="total-count">/ {totalCount}</span>
+        <div className="achievements-header-right">
+          <div className="achievements-summary">
+            <span className="unlocked-count">{unlockedCount}</span>
+            <span className="total-count">/ {totalCount}</span>
+          </div>
+          <button onClick={handleResetStats} className="reset-btn">
+            Reset Stats
+          </button>
         </div>
       </header>
 

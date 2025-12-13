@@ -280,11 +280,23 @@ class AchievementManager {
     }
   };
 
-  constructor(onAchievementUnlock = null) {
+  constructor(userId = null, onAchievementUnlock = null) {
+    this.userId = userId;
     this.onAchievementUnlock = onAchievementUnlock;
+    // Use user-specific keys for logged-in users, session-based for guests
+    this.storagePrefix = userId ? `sp_user_${userId}_` : 'sp_guest_';
     this.stats = this.loadStats();
     this.unlockedAchievements = this.loadUnlocked();
     this.pendingNotifications = [];
+  }
+
+  // Get storage key with user prefix
+  getStatsKey() {
+    return `${this.storagePrefix}achievement_stats`;
+  }
+
+  getAchievementsKey() {
+    return `${this.storagePrefix}achievements`;
   }
 
   // Update stats and check for new achievements
@@ -508,7 +520,7 @@ class AchievementManager {
 
   loadStats() {
     try {
-      const saved = localStorage.getItem('sp_achievement_stats');
+      const saved = localStorage.getItem(this.getStatsKey());
       return saved ? JSON.parse(saved) : {};
     } catch {
       return {};
@@ -517,7 +529,7 @@ class AchievementManager {
 
   saveStats() {
     try {
-      localStorage.setItem('sp_achievement_stats', JSON.stringify(this.stats));
+      localStorage.setItem(this.getStatsKey(), JSON.stringify(this.stats));
     } catch (e) {
       console.warn('Could not save achievement stats:', e);
     }
@@ -525,7 +537,7 @@ class AchievementManager {
 
   loadUnlocked() {
     try {
-      const saved = localStorage.getItem('sp_achievements');
+      const saved = localStorage.getItem(this.getAchievementsKey());
       return saved ? JSON.parse(saved) : {};
     } catch {
       return {};
@@ -534,9 +546,30 @@ class AchievementManager {
 
   saveUnlocked() {
     try {
-      localStorage.setItem('sp_achievements', JSON.stringify(this.unlockedAchievements));
+      localStorage.setItem(this.getAchievementsKey(), JSON.stringify(this.unlockedAchievements));
     } catch (e) {
       console.warn('Could not save achievements:', e);
+    }
+  }
+
+  // Clear guest data (call on logout if user was a guest)
+  static clearGuestData() {
+    try {
+      localStorage.removeItem('sp_guest_achievement_stats');
+      localStorage.removeItem('sp_guest_achievements');
+    } catch (e) {
+      console.warn('Could not clear guest data:', e);
+    }
+  }
+
+  // Clean up old generic localStorage keys (migration from old system)
+  static cleanupOldKeys() {
+    try {
+      // Remove old non-user-specific keys that had corrupted data
+      localStorage.removeItem('sp_achievement_stats');
+      localStorage.removeItem('sp_achievements');
+    } catch (e) {
+      console.warn('Could not clean up old keys:', e);
     }
   }
 

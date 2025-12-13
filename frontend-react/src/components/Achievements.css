@@ -245,3 +245,27 @@
     align-self: flex-start;
   }
 }
+
+/* Header right section */
+.achievements-header-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+/* Reset button */
+.reset-btn {
+  background: rgba(255, 80, 80, 0.2);
+  border: 1px solid rgba(255, 80, 80, 0.5);
+  color: #ff6b6b;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.2s ease;
+}
+
+.reset-btn:hover {
+  background: rgba(255, 80, 80, 0.3);
+  border-color: #ff6b6b;
+}

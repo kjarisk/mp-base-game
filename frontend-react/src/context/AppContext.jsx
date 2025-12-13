@@ -211,6 +211,11 @@ export function AppProvider({ children }) {
 
   const logoutUser = async () => {
     try {
+      // Clear guest achievement data if user was a guest (no id means guest)
+      if (!state.user?.id && window.AchievementManager) {
+        window.AchievementManager.clearGuestData();
+      }
+      
       await logout();
       if (state.socket) {
         state.socket.disconnect();

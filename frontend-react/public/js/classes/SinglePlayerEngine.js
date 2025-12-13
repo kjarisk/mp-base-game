@@ -17,8 +17,8 @@ class SinglePlayerEngine {
     // Player with thrust physics
     this.player = null;
     this.playerVelocity = { x: 0, y: 0 };
-    this.thrustPower = 0.35; // Acceleration when pressing keys
-    this.maxSpeed = 6;
+    this.thrustPower = 0.05; // Acceleration when pressing keys
+    this.maxSpeed = 2;
     this.friction = 0.98; // Slowdown when not thrusting
     this.shootCooldown = 200;
     this.lastShootTime = 0;
@@ -55,6 +55,7 @@ class SinglePlayerEngine {
     this.health = 100;
     this.maxHealth = 100;
     this.damageTaken = false;
+    this.levelCompleted = false; // Guard to prevent multiple level completions
     this.timeElapsed = 0;
     this.timeLimit = 120; // 2 minutes per level
     this.lastTime = 0;
@@ -68,7 +69,7 @@ class SinglePlayerEngine {
     
     // Player rotation for classic controls
     this.playerRotation = 0;
-    this.rotationSpeed = 0.08;
+    this.rotationSpeed = 0.04;
     
     // Powerup states
     this.activePowerups = {
@@ -262,7 +263,7 @@ class SinglePlayerEngine {
   }
 
   fireWeapon() {
-    if (this.isPaused || this.health <= 0) return;
+    if (this.isPaused || this.health <= 0 || this.inSafeZone) return;
     
     const now = Date.now();
     let cooldown = this.shootCooldown;
@@ -271,8 +272,8 @@ class SinglePlayerEngine {
     if (now - this.lastShootTime < cooldown) return;
     this.lastShootTime = now;
     
-    // Shoot in the direction the ship is facing (playerRotation)
-    const angle = this.playerRotation;
+    // Shoot in the direction the ship is facing (offset by -90° since sprite faces up)
+    const angle = this.playerRotation - Math.PI / 2;
     
     // Determine projectile properties
     const isPlasma = this.activePowerups.plasma.active;
@@ -297,6 +298,7 @@ class SinglePlayerEngine {
   fireSpecialWeapon() {
     if (this.specialWeaponCharge < this.maxSpecialCharge) return;
     if (this.specialWeaponCooldown > 0) return;
+    if (this.inSafeZone) return; // Can't use weapons in safe zone
     
     this.specialWeaponCharge = 0;
     this.specialWeaponCooldown = 60; // 1 second cooldown
@@ -370,6 +372,7 @@ class SinglePlayerEngine {
   initializeLevel(levelNum) {
     this.level = levelNum;
     this.damageTaken = false;
+    this.levelCompleted = false; // Reset level completion flag
     this.timeElapsed = 0;
     this.crystalsCollected = 0;
     this.warningPlayed = false;
@@ -407,11 +410,11 @@ class SinglePlayerEngine {
       this.bossWarningTime = Date.now();
     }
     
-    // Create player at start position
+    // Create player at start position (15% smaller: 18 * 0.85 ≈ 15)
     this.player = new Player({
       x: 150,
       y: this.levelHeight / 2,
-      radius: 18,
+      radius: 15,
       color: '#20B2AA',
       username: this.options.username || 'Pilot'
     });
@@ -977,6 +980,7 @@ class SinglePlayerEngine {
       this.objectivesComplete = this.crystalsCollected >= this.requiredCrystals || 
                                  (this.player.x / this.levelWidth) > 0.8;
     }
+  }
 
   checkSafeZone() {
     this.inSafeZone = false;
@@ -1003,17 +1007,19 @@ class SinglePlayerEngine {
     if (this.keys.d) this.playerRotation += this.rotationSpeed;
     
     // Thrust forward with W (in the direction we're facing)
+    // Offset by -90° since the sprite faces up (negative Y) but rotation 0 = right (positive X)
+    const thrustAngle = this.playerRotation - Math.PI / 2;
     let isThrusting = false;
     if (this.keys.w) {
-      this.playerVelocity.x += Math.cos(this.playerRotation) * thrustPower;
-      this.playerVelocity.y += Math.sin(this.playerRotation) * thrustPower;
+      this.playerVelocity.x += Math.cos(thrustAngle) * thrustPower;
+      this.playerVelocity.y += Math.sin(thrustAngle) * thrustPower;
       isThrusting = true;
     }
-    
+
     // Reverse thrust with S (slower)
     if (this.keys.s) {
-      this.playerVelocity.x -= Math.cos(this.playerRotation) * thrustPower * 0.5;
-      this.playerVelocity.y -= Math.sin(this.playerRotation) * thrustPower * 0.5;
+      this.playerVelocity.x -= Math.cos(thrustAngle) * thrustPower * 0.5;
+      this.playerVelocity.y -= Math.sin(thrustAngle) * thrustPower * 0.5;
     }
     
     // Apply friction
@@ -1363,6 +1369,25 @@ class SinglePlayerEngine {
       }
     }
     
+    // Enemy Projectile vs Asteroid (boss/enemy bullets blocked by asteroids)
+    for (let i = this.enemyProjectiles.length - 1; i >= 0; i--) {
+      const proj = this.enemyProjectiles[i];
+      let destroyed = false;
+      
+      for (const asteroid of this.asteroids) {
+        const dist = Math.sqrt((proj.x - asteroid.x) ** 2 + (proj.y - asteroid.y) ** 2);
+        if (dist < proj.radius + asteroid.radius) {
+          // Create small impact particles
+          this.createParticles(proj.x, proj.y, proj.color, 4);
+          this.enemyProjectiles.splice(i, 1);
+          destroyed = true;
+          break;
+        }
+      }
+      
+      if (destroyed) continue;
+    }
+    
     // Player vs Crystal
     for (const crystal of this.crystals) {
       if (crystal.collected) continue;
@@ -1608,6 +1633,10 @@ class SinglePlayerEngine {
   }
 
   levelComplete() {
+    // Guard to prevent multiple completions per level
+    if (this.levelCompleted) return;
+    this.levelCompleted = true;
+    
     const config = this.getLevelConfig(this.level);
     
     // Reduced scoring values

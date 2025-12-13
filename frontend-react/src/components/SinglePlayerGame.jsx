@@ -54,9 +54,13 @@ function SinglePlayerGame() {
         const ctx = canvas.getContext('2d');
         ctx.scale(dpr, dpr);
         
-        // Initialize achievement manager with callback
+        // Initialize achievement manager with user ID and callback
+        // Logged-in users get persistent storage, guests get session-based storage
         if (window.AchievementManager) {
-          achievementManagerRef.current = new window.AchievementManager(handleAchievement);
+          achievementManagerRef.current = new window.AchievementManager(
+            user?.id || null,  // userId for logged-in users, null for guests
+            handleAchievement
+          );
         }
         
         engineRef.current = new window.SinglePlayerEngine(canvas, ctx, {
